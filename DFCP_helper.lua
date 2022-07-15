@@ -6,6 +6,11 @@
 local aircraft_list = {"default", "mig21", "mig29s", "mirage2000", "f4", "f5", "f14"} -- todo: fill this out
 
 
+
+
+
+
+
 -- AIRCRAFT PATROL SPEEDS ----------------------------------------------------------------------------------
 -- TODO: confirm what this speed is, we think it's "indicated", not "ground"
 local patrol_reference_05k = {}
@@ -27,6 +32,11 @@ local patrol_reference_40k = {}
 patrol_reference_40k["default"] = 640
 
 
+
+
+
+
+
 -- AIRCRAFT INTERCEPT SPEEDS -------------------------------------------------------------------------------
 -- TODO: confirm what this speed is, we think it's "indicated", not "ground"
 local intercept_reference_05k = {}
@@ -46,6 +56,11 @@ intercept_reference_30k["default"] = 930
 
 local intercept_reference_40k = {}
 intercept_reference_40k["default"] = 940
+
+
+
+
+
 
 -- internal functions --------------------------------------------------------------------------------------
 
@@ -85,6 +100,11 @@ local function get_speed(ref_altitude, aircraft, altitude_feet)
 end
 
 
+
+
+
+
+
 -- external helper functions --------------------------------------------------------------------------------------
 -- shouldn't normally be needed, but nice helpers to have...
 function feet_to_meters(feet)
@@ -118,6 +138,12 @@ function get_intercept_speed(aircraft, altitude_feet)
     return get_speed(ref_altitude, aircraft, altitude_feet)
 end
 
+
+
+
+
+
+
 -- external functions --------------------------------------------------------------------------------------
 -- the real reason why we're learning LUA
 
@@ -141,6 +167,8 @@ function dfcp_create_interceptors(a2a_dispatcher, moose_name, dcs_unit_prefix, p
     a2a_dispatcher:SetSquadronGci(moose_name, intercept_speed, intercept_speed)
     a2a_dispatcher:SetSquadronGrouping(moose_name, groups_of)
 end
+
+
 
 local known_cap_zones = {}
 
@@ -178,13 +206,16 @@ function dfcp_create_cap(a2a_dispatcher, moose_name, dcs_unit_prefix, plane_type
     a2a_dispatcher:SetSquadronGrouping(moose_name, groups_of)
 end
 
-function dfcp_create_default_iads()
-    redIADS = SkynetIADS:create('red')
-    redIADS:addSAMSitesByPrefix('sam')
-    redIADS:addEarlyWarningRadarsByPrefix('ew')
 
-    return redIADS
+
+
+function dfcp_create_default_iads(red_iads)
+    red_iads:addSAMSitesByPrefix('sam')
+    red_iads:addEarlyWarningRadarsByPrefix('ew')
 end
+
+
+
 
 function dfcp_create_default_dispatcher(spawn_overhead)
     -- set up a default dispatcher that can integrate with IADS
@@ -214,6 +245,8 @@ function dfcp_create_default_dispatcher(spawn_overhead)
     end
     A2ADispatcher:SetDefaultLandingAtRunway()
 end
+
+
 
 
 function dfcp_start_mission(red_iads, a2a_dispatcher, debug)
