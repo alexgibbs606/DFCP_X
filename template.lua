@@ -42,6 +42,7 @@ dfcp_create_default_dispatcher()
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- configure enemy flights
+-- Airport Names: https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Wrapper.Airbase.html##(AIRBASE).AirbaseName
 
 -- station 8 mig21 interceptors at aleppo, launch them in flights of 2
 dfcp_interceptors_create_simple("mig21", AIRBASE.Syria.Aleppo, 2, 8)
