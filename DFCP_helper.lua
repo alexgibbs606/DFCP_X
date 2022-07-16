@@ -115,6 +115,10 @@ function knots_to_kph(knots)
     return 1.852 * knots
 end
 
+function naut_miles_to_kilometers(nm)
+    return 1.852 * nm -- yes, I know it's the same as knots to kph
+end
+
 function get_patrol_speed(aircraft, altitude_feet)
     -- given an aircraft type, and altitude in feet, return our best guess at a good PATROL speed for that plane in KPH
     local ref_altitude = {patrol_reference_05k = {5000,  patrol_reference_05k}, -- this is an ugly hack because I don't know how tables work, wtf is this key
@@ -147,132 +151,200 @@ end
 -- external functions --------------------------------------------------------------------------------------
 -- the real reason why we're learning LUA
 
-
-function dfcp_create_interceptors(a2a_dispatcher, moose_name, dcs_unit_prefix, plane_type, airport, groups_of, stockpile_count)
+local interceptor_squadrons = {}
+local interceptor_count = 0
+function dfcp_interceptors_create(moose_name, dcs_unit_prefix, plane_type, airport, groups_of, stockpile_count)
     -- Create a stockpile of planes to be used as interceptors.
     -- Note: stockpile_count planes exist. Up to stockpile_count can be launched, simultaneously, if there are enough threatening planes
     --
     -- args:
-    -- a2a_dispatcher: moose A2ADispatcher object
     -- moose_name: unique name moose will use to reference this group
     -- dcs_unit_prefix: prefix of the name of the unit(s) in the mission that moose will randomly clone to make this flight
     -- plane_type: name of the plane type in aircraft_list in this file(default, mig21, mirage2000, f14, etc.) -- used to automatically set speeds
     -- airport: moose airport object from https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Wrapper.Airbase.html##(AIRBASE).AirbaseName
     -- groups_of: how many will be launched as 1 flight
     -- stockpile_count: how many planes are available from this group
+    interceptor_count = interceptor_count + 1
+    interceptor_squadrons[#interceptor_squadrons+1] = moose_name -- keep a record of all the interceptors we've created
     
-    
-    a2a_dispatcher:SetSquadron(moose_name, airport, { dcs_unit_prefix }, stockpile_count )
+    A2ADispatcher:SetSquadron(moose_name, airport, { dcs_unit_prefix }, stockpile_count )
     local intercept_speed = get_intercept_speed(plane_type, 15000)
-    a2a_dispatcher:SetSquadronGci(moose_name, intercept_speed, intercept_speed)
-    a2a_dispatcher:SetSquadronGrouping(moose_name, groups_of)
+    A2ADispatcher:SetSquadronGci(moose_name, intercept_speed, intercept_speed)
+    A2ADispatcher:SetSquadronGrouping(moose_name, groups_of)
+    
+end
+
+function dfcp_interceptors_create_simple(unit_prefix_and_type, airport, groups_of, stockpile_count)
+    -- Simpler option to create a stockpile of planes to be used as interceptors.
+    -- CONDITION: the template plane in the DCS editor, must be a plane name in "aircraft_list". Ex: "mig21", "f4"
+    --
+    -- Note: stockpile_count planes exist. Up to stockpile_count can be launched, simultaneously, if there are enough threatening planes
+    --
+    -- args:
+    -- unit_prefix_and_type: prefix of the name of the unit(s) in the mission, must also be a plane name in "aircraft_list". Ex: "mig21", "f4"
+    -- airport: moose airport object from https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Wrapper.Airbase.html##(AIRBASE).AirbaseName
+    -- groups_of: how many will be launched as 1 flight
+    -- stockpile_count: how many planes are available from this group
+    local moose_name = "dfcp_interceptor_#" .. interceptor_count+1
+    dfcp_interceptors_create(moose_name, unit_prefix_and_type, unit_prefix_and_type, airport, groups_of, stockpile_count)
+end
+
+function dfcp_interceptors_set_difficulty(difficulty_factor)
+    -- difficulty_value: 1.0 means evenly matched, 2.0 means 2-to-1 in their favor, 0.5 means 2-to-1 in our favor
+    for index, squadron_name in ipairs(interceptor_squadrons) do
+        A2ADispatcher:SetSquadronOverhead(squadron_name, difficulty_factor)
+    end
+end
+
+function dfcp_interceptors_set_air_spawn()
+    for index, squadron_name in ipairs(interceptor_squadrons) do
+        A2ADispatcher:SetSquadronTakeoffInAir(squadron_name)
+    end
 end
 
 
 
-local known_cap_zones = {}
 
-function dfcp_create_cap(a2a_dispatcher, moose_name, dcs_unit_prefix, plane_type, airport, cap_zone, altitude_ft, groups_of, stockpile_count )
+local known_cap_zones = {}
+local cap_squadrons = {}
+local cap_count = 0
+
+function dfcp_cap_create(moose_name, dcs_unit_prefix, plane_type, airport, cap_zone_name, altitude_ft, groups_of, stockpile_count )
     -- Create a CAP flight that can replenish losses or RTB's, used for CAP *only*!
     -- NOTE: every CAP flight created can launch simultaneously, regardless of detected threat!
     --
     -- args:
-    -- a2a_dispatcher: moose A2ADispatcher object
     -- moose_name: unique name moose will use to reference this group
     -- dcs_unit_prefix: prefix of the name of the unit(s) in the mission that moose will randomly clone to make this flight
     -- plane_type: name of the plane type in aircraft_list in this file(default, mig21, mirage2000, f14, etc.) -- used to automatically set speeds
     -- airport: moose airport object from https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Wrapper.Airbase.html##(AIRBASE).AirbaseName
-    -- cap_zone: name of the dcs mission editor zone to patrol within
+    -- cap_zone_name: name of the dcs mission editor zone to patrol within
     -- altitude_ft: patrol altitude in feet
     -- groups_of: how many will be launched as 1 flight
     -- stockpile_count: how many planes are available from this group
     
     -- get the cap zone
-    current_zone = known_cap_zones[zone_name]
+    cap_count = cap_count + 1
+    cap_squadrons[#cap_squadrons+1] = moose_name -- keep a record of all the interceptors we've created
+
+    
+    local current_zone = known_cap_zones[cap_zone_name]
     if current_zone == nil then
-        known_cap_zones[zone_name] = ZONE:New(zone_name)
-        current_zone = known_cap_zones[zone_name]
+        known_cap_zones[cap_zone_name] = ZONE:New(cap_zone_name)
+        current_zone = known_cap_zones[cap_zone_name]
     end
     
-    a2a_dispatcher:SetSquadron(moose_name, airport, { dcs_unit_prefix }, stockpile_count )
+    A2ADispatcher:SetSquadron(moose_name, airport, { dcs_unit_prefix }, stockpile_count )
     local intercept_speed = get_intercept_speed(plane_type, altitude_ft)
     local patrol_speed = get_patrol_speed(plane_type, altitude_ft)
     local altitude_m = feet_to_meters(altitude_ft)
-    A2ADispatcher:SetSquadronCap(moose_name, cap_zone,
+    A2ADispatcher:SetSquadronCap(moose_name, current_zone,
                                  altitude_m, altitude_m, -- min/max patrol altitude (m)
                                  patrol_speed, patrol_speed, -- min/max patrol speed (kmh)
                                  intercept_speed, intercept_speed, -- min/max intercept speed (kmh) 
                                  "BARO") -- "RADIO" altitude, or "BARO" altitude
-    a2a_dispatcher:SetSquadronGrouping(moose_name, groups_of)
+    
+    A2ADispatcher:SetSquadronGrouping(moose_name, groups_of)
+
+    --TODO: Set up tankers for their cap. pretty sure this snippet code is BS, and we need to set by squadron, not by default.
+    -- Set the default tanker for refuelling to "Tanker", when the default fuel threshold has reached 90% fuel left.
+    -- A2ADispatcher:SetDefaultFuelThreshold( 0.9 )
+    -- A2ADispatcher:SetDefaultTanker( "Tanker" )
 end
 
 
 
-
-function dfcp_create_default_iads(red_iads)
-    red_iads:addSAMSitesByPrefix('sam')
-    red_iads:addEarlyWarningRadarsByPrefix('ew')
-end
-
-
-
-
-function dfcp_create_default_dispatcher(spawn_overhead)
-    -- set up a default dispatcher that can integrate with IADS
+function dfcp_cap_create_simple(unit_prefix_and_type, airport, cap_zone_name, altitude_ft, groups_of, stockpile_count )
+    -- Create a CAP flight that can replenish losses or RTB's, used for CAP *only*!
+    -- NOTE: every CAP flight created can launch simultaneously, regardless of detected threat!
     --
-    -- args: 
-    -- spawn_overhead: if true planes will spawn above the runway (improves scramble time)
+    -- args:
+    -- unit_prefix_and_type: prefix of the name of the unit(s) in the mission, must also be a plane name in "aircraft_list". Ex: "mig21", "f4"
+    -- airport: moose airport object from https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Wrapper.Airbase.html##(AIRBASE).AirbaseName
+    -- cap_zone_name: name of the dcs mission editor zone to patrol within
+    -- altitude_ft: patrol altitude in feet
+    -- groups_of: how many will be launched as 1 flight
+    -- stockpile_count: how many planes are available from this group
+    
+    -- get the cap zone
+    local moose_name = "dfcp_cap_#" .. cap_count+1
+    dfcp_cap_create(moose_name, unit_prefix_and_type, unit_prefix_and_type, airport, cap_zone_name, altitude_ft, groups_of, stockpile_count)
+end
 
 
-    -- Setup the detection to group targets to a 30km range (planes within 30km of eachother are considered 1 "group")
+function dfcp_create_default_iads()
+    -- initial setup for IADS, using default settings
+    redIADS = SkynetIADS:create('red')
+    redIADS:addSAMSitesByPrefix('sam')
+    redIADS:addEarlyWarningRadarsByPrefix('ew')
+    -- power/command config
+    local iads_command = StaticObject.getByName("iads-cp")
+    local iads_command_power = StaticObject.getByName("iads-cp-power")
+    redIADS:addCommandCenter(iads_command):addPowerSource(iads_command_power)
+end
+
+function dfcp_start_iads(debug)
+    -- start the iads
+    if debug == 1 then -- DEBUG MISSION START
+        redIADS:activate()
+            -- IADS debug info config
+            -- TODO: find a good template of what to enable here.
+            local iadsDebug = redIADS:getDebugSettings()
+            iadsDebug.IADSStatus = true
+            iadsDebug.radarWentDark = false
+            iadsDebug.contacts = true
+            iadsDebug.radarWentLive = false
+            iadsDebug.noWorkingCommmandCenter = false
+            iadsDebug.ewRadarNoConnection = false
+            iadsDebug.samNoConnection = false
+            iadsDebug.jammerProbability = false
+            iadsDebug.addedEWRadar = false
+            iadsDebug.hasNoPower = false
+            iadsDebug.harmDefence = false
+            iadsDebug.samSiteStatusEnvOutput = false
+            iadsDebug.earlyWarningRadarStatusEnvOutput = false
+            iadsDebug.commandCenterStatusEnvOutput = false
+    else -- NORMAL MISSION START
+        redIADS:setupSAMSitesAndThenActivate()
+    end
+
+end
+
+
+
+
+function dfcp_create_default_dispatcher()
+    -- set up a default dispatcher that can integrate with IADS
+
+
+    -- Setup the detection to group targets to a 15nm range (planes within 15nm of eachother are considered 1 "group")
     -- engagement decisions are based on the number of "groups" detected.
     DetectionSetGroup = SET_GROUP:New()
-    Detection = DETECTION_AREAS:New( DetectionSetGroup, 30000 )
+    Detection = DETECTION_AREAS:New( DetectionSetGroup, naut_miles_to_kilometers(15) )
 
-    -- Setup the A2A dispatcher, CAP will engage anything within 200km, interceptors will scramble to anything within 200km of the airport
+    -- Setup the A2A dispatcher, CAP will engage anything within 100nm, interceptors will scramble to anything within 100nm of the airport
     A2ADispatcher = AI_A2A_DISPATCHER:New( Detection )
-    A2ADispatcher:SetEngageRadius(200000) -- CAP range
-    A2ADispatcher:SetGciRadius(200000) -- Intercept range
+    A2ADispatcher:SetEngageRadius(naut_miles_to_kilometers(100)) -- CAP range
+    A2ADispatcher:SetGciRadius(naut_miles_to_kilometers(100)) -- Intercept range
 
     -- define borders using a late spawn helicopter named RED-BORDER, don't spawn the heli
-    RedBorderZone = ZONE_POLYGON:New( "red_border", GROUP:FindByName( "red_border" ) )
+    RedBorderZone = ZONE_POLYGON:New( "red-border", GROUP:FindByName( "red-border" ) )
     A2ADispatcher:SetBorderZone( RedBorderZone )
 
-    if spawn_overhead == true then
-        A2ADispatcher:SetSquadronTakeoffInAir()
-    else
-        A2ADispatcher:SetDefaultTakeoffFromRunway()
-    end
+
+    A2ADispatcher:SetDefaultTakeoffFromRunway()
     A2ADispatcher:SetDefaultLandingAtRunway()
 end
 
 
 
 
-function dfcp_start_mission(red_iads, a2a_dispatcher, debug)
+function dfcp_start_mission()
     -- helper to handle debug settings, etc.
-    if debug == 1 then -- DEBUG MISSION START
-        red_iads.activate()
-            -- IADS debug info config
-            -- TODO: find a good template of what to enable here.
-            local iadsDebug = red_iads:getDebugSettings()
-            iadsDebug.IADSStatus = true
-            iadsDebug.radarWentDark = true
-            iadsDebug.contacts = true
-            iadsDebug.radarWentLive = true
-            iadsDebug.noWorkingCommmandCenter = true
-            iadsDebug.ewRadarNoConnection = true
-            iadsDebug.samNoConnection = true
-            iadsDebug.jammerProbability = true
-            iadsDebug.addedEWRadar = true
-            iadsDebug.hasNoPower = false
-            iadsDebug.harmDefence = true
-            iadsDebug.samSiteStatusEnvOutput = true
-            iadsDebug.earlyWarningRadarStatusEnvOutput = true
-            iadsDebug.commandCenterStatusEnvOutput = true
-        
+    if DFCP_DEBUG == 1 then -- DEBUG MISSION START
+        A2ADispatcher:SetDefaultCapTimeInterval(30, 30) -- if this is too short, you get double spawns
             -- MOOSE:A2ADispatcher debug
-            a2a_dispatcher:SetTacticalDisplay(true)
+            A2ADispatcher:SetTacticalDisplay(true)
         
             -- test to see which groups are added and removed to the SET_GROUP at runtime by Skynet:
             function outputNames()
@@ -282,6 +354,10 @@ function dfcp_start_mission(red_iads, a2a_dispatcher, debug)
             mist.scheduleFunction(outputNames, self, 1, 2)
     
     else -- NORMAL MISSION START
-        red_iads.setupSAMSitesAndThenActivate()
+        A2ADispatcher:SetDefaultCapTimeInterval(300, 900) -- check cap every 5-15 minutes
     end
+
+    -- start the a2a dispatcher 
+    A2ADispatcher:Start()
+    redIADS:addMooseSetGroup(DetectionSetGroup)
 end
