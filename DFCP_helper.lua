@@ -115,8 +115,8 @@ function knots_to_kph(knots)
     return 1.852 * knots
 end
 
-function naut_miles_to_kilometers(nm)
-    return 1.852 * nm -- yes, I know it's the same as knots to kph
+function naut_miles_to_meters(nm)
+    return 1.852 * nm * 1000
 end
 
 function get_patrol_speed(aircraft, altitude_feet)
@@ -185,7 +185,7 @@ function dfcp_interceptors_create_simple(unit_prefix_and_type, airport, groups_o
     -- airport: moose airport object from https://flightcontrol-master.github.io/MOOSE_DOCS/Documentation/Wrapper.Airbase.html##(AIRBASE).AirbaseName
     -- groups_of: how many will be launched as 1 flight
     -- stockpile_count: how many planes are available from this group
-    local moose_name = "dfcp_interceptor_#" .. interceptor_count+1
+    local moose_name = "dfcp_interceptor_" .. tostring(interceptor_count+1)
     dfcp_interceptors_create(moose_name, unit_prefix_and_type, unit_prefix_and_type, airport, groups_of, stockpile_count)
 end
 
@@ -267,7 +267,7 @@ function dfcp_cap_create_simple(unit_prefix_and_type, airport, cap_zone_name, al
     -- stockpile_count: how many planes are available from this group
     
     -- get the cap zone
-    local moose_name = "dfcp_cap_#" .. cap_count+1
+    local moose_name = "dfcp_cap_" .. tostring(cap_count+1)
     dfcp_cap_create(moose_name, unit_prefix_and_type, unit_prefix_and_type, airport, cap_zone_name, altitude_ft, groups_of, stockpile_count)
 end
 
@@ -320,12 +320,12 @@ function dfcp_create_default_dispatcher()
     -- Setup the detection to group targets to a 15nm range (planes within 15nm of eachother are considered 1 "group")
     -- engagement decisions are based on the number of "groups" detected.
     DetectionSetGroup = SET_GROUP:New()
-    Detection = DETECTION_AREAS:New( DetectionSetGroup, naut_miles_to_kilometers(15) )
+    Detection = DETECTION_AREAS:New( DetectionSetGroup, naut_miles_to_meters(15) )
 
     -- Setup the A2A dispatcher, CAP will engage anything within 100nm, interceptors will scramble to anything within 100nm of the airport
     A2ADispatcher = AI_A2A_DISPATCHER:New( Detection )
-    A2ADispatcher:SetEngageRadius(naut_miles_to_kilometers(100)) -- CAP range
-    A2ADispatcher:SetGciRadius(naut_miles_to_kilometers(100)) -- Intercept range
+    A2ADispatcher:SetEngageRadius(naut_miles_to_meters(100)) -- CAP range
+    A2ADispatcher:SetGciRadius(naut_miles_to_meters(100)) -- Intercept range
 
     -- define borders using a late spawn helicopter named RED-BORDER, don't spawn the heli
     RedBorderZone = ZONE_POLYGON:New( "red-border", GROUP:FindByName( "red-border" ) )
@@ -334,6 +334,12 @@ function dfcp_create_default_dispatcher()
 
     A2ADispatcher:SetDefaultTakeoffFromRunway()
     A2ADispatcher:SetDefaultLandingAtRunway()
+
+    if DFCP_DEBUG == 1 then -- DEBUG MISSION START
+        A2ADispatcher:SetDefaultCapTimeInterval(30, 30) -- if this is too short, you get double spawns
+    else -- NORMAL MISSION START
+        A2ADispatcher:SetDefaultCapTimeInterval(300, 900) -- check cap every 5-15 minutes
+    end
 end
 
 
@@ -342,19 +348,15 @@ end
 function dfcp_start_mission()
     -- helper to handle debug settings, etc.
     if DFCP_DEBUG == 1 then -- DEBUG MISSION START
-        A2ADispatcher:SetDefaultCapTimeInterval(30, 30) -- if this is too short, you get double spawns
-            -- MOOSE:A2ADispatcher debug
-            A2ADispatcher:SetTacticalDisplay(true)
-        
-            -- test to see which groups are added and removed to the SET_GROUP at runtime by Skynet:
-            function outputNames()
-                env.info("IADS Radar Groups added by Skynet:")
-                env.info(DetectionSetGroup:GetObjectNames())
-            end
-            mist.scheduleFunction(outputNames, self, 1, 2)
-    
-    else -- NORMAL MISSION START
-        A2ADispatcher:SetDefaultCapTimeInterval(300, 900) -- check cap every 5-15 minutes
+        -- MOOSE:A2ADispatcher debug
+        A2ADispatcher:SetTacticalDisplay(true)
+
+        -- test to see which groups are added and removed to the SET_GROUP at runtime by Skynet:
+        function outputNames()
+            env.info("IADS Radar Groups added by Skynet:")
+            env.info(DetectionSetGroup:GetObjectNames())
+        end
+        mist.scheduleFunction(outputNames, self, 1, 2)
     end
 
     -- start the a2a dispatcher 

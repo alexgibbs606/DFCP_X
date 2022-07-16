@@ -1,5 +1,5 @@
 -- MISSION EDITOR INSTRUCTIONS
-DFCP_DEBUG = 0 -- Set this to zero and reload the script file in the mission editor before running your mission for real!
+DFCP_DEBUG = 1 -- Set this to zero and reload the script file in the mission editor before running your mission for real!
 -- In the mission editor, place a delayed-spawn helicopter named "red-border", give it waypoints that draw out a boundary.
 -- everywhere inside of this boundary, blue players can be engaged, outside of this boundary, they are safe.
 
@@ -46,9 +46,9 @@ dfcp_create_default_dispatcher()
 -- station 8 mig21 interceptors at aleppo, launch them in flights of 2
 dfcp_interceptors_create_simple("mig21", AIRBASE.Syria.Aleppo, 2, 8)
 
--- launch 1 flight of 2 cap mig29s from Damascus, orbit inside the "cap-zone-1" zone created in the mission editor at 15K ft.
+-- launch 1 flight of 2 cap mig29s from Kuweires to patrol at 15K ft inside the "cap-zone-1" zone created in the mission editor
 -- Three additional waves of 2 can be launched (8 planes total), but only one wave can be in combat at once.
-dfcp_cap_create_simple("mig29s", AIRBASE.Syria.Damascus , "cap-zone-1", 15000, 2, 8)
+dfcp_cap_create_simple("mig29s", AIRBASE.Syria.Kuweires , "cap-zone-1", 15000, 2, 8)
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
