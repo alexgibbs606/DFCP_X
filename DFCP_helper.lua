@@ -15,6 +15,7 @@ local aircraft_list = {"default", "mig21", "mig29s", "mirage2000", "f4", "f5", "
 -- TODO: confirm what this speed is, we think it's "indicated", not "ground"
 local patrol_reference_05k = {}
 patrol_reference_05k["default"] = 605
+patrol_reference_05k["mig21"] = 700
 
 local patrol_reference_10k = {}
 patrol_reference_10k["default"] = 610
