@@ -1,0 +1,10 @@
+mapResource = 
+{
+    ["ResKey_Action_31"] = "skynet-iads-compiled.lua",
+    ["ResKey_Action_30"] = "Moose.lua",
+    ["ResKey_Action_33"] = "carrier_tanker_awacs.lua",
+    ["ResKey_Action_32"] = "DFCP_helper.lua",
+    ["ResKey_Action_29"] = "mist_4_4_90.lua",
+    ["ResKey_Action_36"] = "PG_m10.lua",
+    ["ResKey_Action_35"] = "radio_beep_x3.ogg",
+} -- end of mapResource
