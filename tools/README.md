@@ -1,0 +1,1 @@
+waypoint_copy.ps1 - Copies waypoints from one aircraft group to any number of destination aircraft groups. Automatically handles unpacking and repacking the *.miz file. Edit the ARGS in the file before running.
