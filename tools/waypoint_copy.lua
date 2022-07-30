@@ -11,18 +11,18 @@
 --  8. Open the miz in DCS, it *should* work :)
 
 
---ARGS
-local working_directory = [[C:\Users\Chris\Saved Games\DCS\Missions\scripts\DFCP-ME\tools\]] -- make sure this ends with "\"
--- choose the coalition/flights to copy
-local src = "CONTACT" -- group name to copy waypoints from
-local dst_all = {"ORPHAN", "BONK", "DESKPOP", "ENYA", "FURRY", "PIRATE"} -- group names to copy waypoints to
--- END OF ARGS
+--ARGS: ./lua54.exe waypoint_copy.lua "<full_path_to_file_to_modify>" <src_aircraft> "<dst aircraft> <dst aircraft> <dst aircraft> ..." 
+local file_to_modify = arg[1] 
+local src = arg[2]
+local dst_all = {}
+for word in arg[3]:gmatch('[^,%s]+') do -- parse out space or comma separated words
+    dst_all[#dst_all+1] = word
+end
 
 
-local mission_file_name = "mission" -- file must be present in the above working_directory folder
-local out_file_name = "mission.updated.lua" -- file will be created in the above working_directory folder
 
--- TODO: arg parser, python wrapper?
+-- TODO: F-16 add initial position as a final waypoint
+-- TODO: allow to select all player aircraft (or all red or blue player aircraft) automatically
 
 
 -- build a helper lookup table for flights we'll modify
@@ -73,8 +73,7 @@ end
 
 
 -- read in the mission file
-local mission_file_path = working_directory .. mission_file_name
-local handle = io.open(mission_file_path,'rb')
+local handle = io.open(file_to_modify,'rb')
 local raw_data_str  = handle:read("*a")
 handle:close()
 local raw_data_lua = raw_data_str .. "\n return mission" 
@@ -129,6 +128,9 @@ for index, data in ipairs(spinnybois) do
     local group_name = data[4]
 
     if dst_lookup[group_name] then -- only update groups that we were asked to
+        -- wipe out all waypoints after the first
+        mission_data["coalition"][coalition]["country"][country_id]["helicopter"]["group"][group_index]["route"]["points"] = {mission_data["coalition"][coalition]["country"][country_id]["helicopter"]["group"][group_index]["route"]["points"][1]}
+        -- now copy the new waypoints in
         for i, idata in ipairs(copy_source["points"]) do
             if i > 1 then -- skip wp0
                 -- write the waypoint to the miz file stored in memory
@@ -146,6 +148,9 @@ for index, data in ipairs(pointybois) do
     local group_name = data[4]
 
     if dst_lookup[group_name] then -- only update groups that we were asked to
+        -- wipe out all waypoints after the first
+        mission_data["coalition"][coalition]["country"][country_id]["plane"]["group"][group_index]["route"]["points"] = {mission_data["coalition"][coalition]["country"][country_id]["plane"]["group"][group_index]["route"]["points"][1]}
+        -- now copy the new waypoints in
         for i, idata in ipairs(copy_source["points"]) do
             if i > 1 then -- skip wp0
                 -- write the waypoint to the miz file stored in memory
@@ -156,5 +161,4 @@ for index, data in ipairs(pointybois) do
 end
 
 -- write the miz file in memory out to disk
-local out_file_path = working_directory .. out_file_name
-serialize(out_file_path, mission_data)
+serialize(file_to_modify, mission_data)
