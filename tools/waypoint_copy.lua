@@ -7,14 +7,15 @@
 --       - choose coalition, and flight names in your mission
 --  5. Run the lua script
 --  6. Drag your output file back into 7zip
---  7. Open the miz in DCS, it *should* work :)
+--  7. remove "mission" from the file in 7zip, rename "mission.updated.lua" to "mission"
+--  8. Open the miz in DCS, it *should* work :)
 
 
 --ARGS
-local working_directory = [[C:\Users\Chris\Saved Games\DCS\Missions\scripts\DFCP-ME\waypoint_copy\]] -- make sure this ends with "\"
+local working_directory = [[C:\Users\Chris\Saved Games\DCS\Missions\scripts\DFCP-ME\tools\]] -- make sure this ends with "\"
 -- choose the coalition/flights to copy
-local src = "IVAN" -- group name to copy waypoints from
-local dst_all = {"ORPHAN", "ORPHAN-FR", "PIRATE", "PATCH", "PATCH_AUS"} -- group names to copy waypoints to
+local src = "CONTACT" -- group name to copy waypoints from
+local dst_all = {"ORPHAN", "BONK", "DESKPOP", "ENYA", "FURRY", "PIRATE"} -- group names to copy waypoints to
 -- END OF ARGS
 
 
