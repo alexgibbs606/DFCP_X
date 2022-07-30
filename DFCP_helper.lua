@@ -3,7 +3,7 @@
 ------------------------------------------------------------------------------------------------------------
 
 -- which aircraft are we supporting (keys for lookup)
-local aircraft_list = {"default", "mig21", "mig29s", "mirage2000", "f4", "f5", "f14"} -- todo: fill this out
+local aircraft_list = {"default", "mig21", "mig29s", "mig31", "mirage2000", "f4", "f5", "f14", "jf17"} -- todo: fill this out
 
 
 
@@ -271,7 +271,6 @@ function dfcp_cap_create_simple(unit_prefix_and_type, airport, cap_zone_name, al
     local moose_name = "dfcp_cap_" .. tostring(cap_count+1)
     dfcp_cap_create(moose_name, unit_prefix_and_type, unit_prefix_and_type, airport, cap_zone_name, altitude_ft, groups_of, stockpile_count)
 end
-
 
 function dfcp_create_default_iads()
     -- initial setup for IADS, using default settings
