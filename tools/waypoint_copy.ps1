@@ -1,7 +1,7 @@
 # This script automates copying waypoints from one flight to multiple other flights in a mission file.
 # When run successfully, a new miz file will be created in the same directory as the input miz, named: "mymissionname.wpcopy.miz"
 
-# Usage:1
+# Usage:
 # Update the below ARGS.
 # miz_file_path: the full path to your *.miz file
 # src_aircraft: the group name of the flight to copy waypoints from
