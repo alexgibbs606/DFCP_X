@@ -3,7 +3,40 @@
 ------------------------------------------------------------------------------------------------------------
 
 -- which aircraft are we supporting (keys for lookup)
-local aircraft_list = {"default", "mig21", "mig29s", "mig31", "mirage2000", "f4", "f5", "f14", "jf17"} -- todo: fill this out
+local aircraft_list = {"default",
+                       "f4",
+                       "f5",
+                       "f14a",
+                       "f14b",
+                       "f15c",
+                       "f15e",
+                       "f16",
+                       "f16cm",
+                       "jf17",
+                       "mig15",
+                       "mig19",
+                       "mig21",
+                       "mig23",
+                       "mig25pd",
+                       "mig25rbt",
+                       "mig27",
+                       "mig29a",
+                       "mig29g",
+                       "mig29s",
+                       "mig31",
+                       "mirage2000",
+                       "miragef1",
+                       "su17",
+                       "su24m",
+                       "su24mr",
+                       "su25",
+                       "su25t",
+                       "su25tm",
+                       "su27",
+                       "su30",
+                       "su33",
+                       "su34",
+                       } -- todo: fill this out
 
 
 
@@ -362,4 +395,48 @@ function dfcp_start_mission()
     -- start the a2a dispatcher 
     A2ADispatcher:Start()
     redIADS:addMooseSetGroup(DetectionSetGroup)
+end
+
+
+function low_alt_check(low_fly_zone_name, alt_limit_feet, group_name, stop_check_flag, fail_condition_flag)
+    -- raise a flag if a unit within a group goes above a certain altitude above *sea level*
+    -- Example: low_alt_check("low-alt-zone", "7000", "blue", "5", "53")
+    -- ARGS:
+    --      low_fly_zone_name - name of a delayed-spawn unit which has waypoints
+    --                          defining the perimeter of the area to enforce the limit
+    --      alt_limit_feet - units above this many feet sea level will be detected
+    --      stop_check_flag - set this flag when the low level restriction is over
+    --      fail_condition_flag - this flag is raised when a unit breaks the altitude limit
+    --      group_name - the name of the group in the mission editor to apply this limit to
+
+
+    -- internal, not sure it matters
+    local next_zone_name = low_fly_zone_name
+
+    local group_polygon = GROUP:FindByName(low_fly_zone_name) -- name of the unit that defines the group to check
+    local alt_limit_zone = ZONE_POLYGON:New(next_zone_name, group_polygon)
+
+    checkOverHeight = SCHEDULER:New(nil,
+        function()
+            -- Check to see if a bravo objective has been killed
+            -- If it has, then stop checking height in zone
+            if USERFLAG:New(stop_check_flag):Get() > 0 then -- stop the check once the mission is accomplished
+                checkOverHeight:Stop()
+            else
+                local group_to_check = GROUP:FindByName(group_name) -- DCS plane group
+                if group_to_check then
+                    if group_to_check:IsPartlyOrCompletelyInZone(alt_limit_zone) then
+                        local units = group_to_check:GetUnits()
+                        for unit_number=1, #units do -- step over all planes in the group
+                            if group_to_check:GetUnit(unit_number):GetAltitude() > (alt_limit_feet / 3.281) then -- check the altitude (feet-to-meters) - we're pretty sure that tests AGL, not MSL
+                                -- group_to_check:MessageToAll("Bravo, be advised, " .. group_to_check:GetUnit(unit_number):GetName() .. " has been detected by the shore radar. Expect air resistence when you reach Lar.", 30)
+                                USERFLAG:New(fail_condition_flag):Set(1) -- flag 6 gets set when the altitude limit gets busted
+                                checkOverHeight:Stop()
+                            end
+                        end
+                    end
+                end
+            end
+        end,
+    {}, 0, 2) -- run this function every 2 seconds
 end
