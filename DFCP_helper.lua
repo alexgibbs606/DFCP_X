@@ -429,7 +429,6 @@ function low_alt_check(low_fly_zone_name, alt_limit_feet, group_name, stop_check
                         local units = group_to_check:GetUnits()
                         for unit_number=1, #units do -- step over all planes in the group
                             if group_to_check:GetUnit(unit_number):GetAltitude() > (alt_limit_feet / 3.281) then -- check the altitude (feet-to-meters) - we're pretty sure that tests AGL, not MSL
-                                -- group_to_check:MessageToAll("Bravo, be advised, " .. group_to_check:GetUnit(unit_number):GetName() .. " has been detected by the shore radar. Expect air resistence when you reach Lar.", 30)
                                 USERFLAG:New(fail_condition_flag):Set(1) -- flag 6 gets set when the altitude limit gets busted
                                 checkOverHeight:Stop()
                             end
