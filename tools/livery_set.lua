@@ -6,21 +6,21 @@
 
 
 
---ARGS: ./lua54.exe livery_set.lua "<full_path_to_file_to_modify>" "<full path to folder this file is in>" [desert|winter]
+--ARGS: ./lua54.exe livery_set.lua "<full path to DFCP-ME/tools/lib>" "<full_path_to_file_to_modify>" [desert|winter]
 local LIB_PATH = arg[1] -- TODO: how can we find our library path in lua and avoid this ugly hack??
 local FILEPATH = arg[2]
 local LIVERY = arg[3]
 
--- print("###")
--- print(LIB_PATH)  
--- print(FILEPATH)
--- print(LIVERY)
--- print("###")
 package.path = LIB_PATH .. "/?.lua;" .. package.path
-
 require("mission_io")
 
 -- Warning: unit names AND skin names don't match what you see in the editor. You have to open the mission file to find these.
+
+local FORCE_OVERWRITE = true -- TODO: I'm pretty sure setting these values to something invalid is totally okay. If so, then we only need to add the "custom" cases
+-- TODO: make sure we support going back to default skins
+-- TODO: support statics
+
+
 local desert = {} -- best "desert" skin for each known unit
 desert["Leclerc"] = "desert"
 desert["Ural-375"] = "desert"
@@ -67,8 +67,8 @@ mission_data = mission_io.read_mission(FILEPATH)
 
 
 for i, coalition in ipairs{"red", "blue"} do
-    local unknown_list = {}
-    local unavailable_list = {}
+    local unknown_list = {} -- used to only send log messages once per unit type
+    local unavailable_list = {} -- used to only send log messages once per unit type
     for country_id, unit_table in ipairs(mission_data["coalition"][coalition]["country"]) do -- for each country on red/blue
         if unit_table["vehicle"] ~= nil then
             for group_index, group_data in ipairs(unit_table["vehicle"]["group"]) do
@@ -81,8 +81,13 @@ for i, coalition in ipairs{"red", "blue"} do
                     end
                     if chosen_table[unit_type] == nil then -- unit is not in our lookup table for the selected LIVERY
                         if unknown_list[unit_type] == nil then
-                            unknown_list[unit_type] = true
-                            print("UNKNOWN - " .. unit_type .. " - " .. unit_name)
+                            if FORCE_OVERWRITE then
+                                unit_data["livery_id"] = LIVERY
+                                print("FORCING - " .. unit_type .. " - " .. unit_name .. " - " .. unit_livery .. " -> " .. chosen_livery)    
+                            else
+                                unknown_list[unit_type] = true
+                                print("UNKNOWN - " .. unit_type .. " - " .. unit_name)
+                            end
                         end
                     elseif chosen_table[unit_type] ~= nil then -- unit is in our lookup table, and it has a relevant skin
                         local chosen_livery = chosen_table[unit_type]
@@ -90,8 +95,7 @@ for i, coalition in ipairs{"red", "blue"} do
                             unit_data["livery_id"] = chosen_livery 
                             print("UPDATED - " .. unit_type .. " - " .. unit_name .. " - " .. unit_livery .. " -> " .. chosen_livery)
                     end
-
-                    else -- unit is in our lookup table, but it doesn't have the desired skin
+                    else -- unit is in our lookup table, but we think the default is the best option
                         if unavailable_list[unit_type] == nil then
                             unavailable_list[unit_type] = true
                             print("NO-SKIN - " .. unit_type .. " - " .. unit_name)
