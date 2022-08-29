@@ -1,44 +1,49 @@
 -- MISSION EDITOR INSTRUCTIONS
-DFCP_DEBUG = 1 -- Set this to zero and reload the script file in the mission editor before running your mission for real!
--- In the mission editor, place a delayed-spawn helicopter named "red-border", give it waypoints that draw out a boundary.
--- everywhere inside of this boundary, blue players can be engaged, outside of this boundary, they are safe.
+DFCP_DEBUG = 1
+-- DEBUGGING:
+    -- Set this to 0 and reload the script file in the mission editor before running your mission for real!
+    -- If things aren't working, open powershell, and run this command (with your user name filled in):
+        --  Get-Content "C:\Users\your_user_name\Saved Games\DCS\Logs\dcs.log" -Wait -Tail 30
+        -- check for error messages after loading the mission has finished (but typically before you press "fly")
 
--- IADS Steps
-    -- 1. make a static object named "iads-cp", this command post object will coordinate your sam sites and EW radars.
-    -- 2. make a static object named "iads-cp-power", this object powers your command post
-    -- 3. place EW radars, or AWACS units
-        -- start the group name with "ew-"
-    -- 4. place long range SAMs
-        -- start the group name with "sam-"
-        -- the first unit in the group must be the search radar (if it has one) or the tracking radar
-        -- one type of SAM per group
-    -- 5. place short range SAM/AAA
-        -- do not name these groups starting with "sam-", they will operate independent of IADS
-    -- 6. place point defense (SA-15)
-        -- don't name these groups starting with "sam-", they will operate independent of IADS
-        -- TODO: instructions for making these participate in IADS
-
--- A2A Steps
-    -- place single "delayed spawn" planes to serve as templates for MOOSE, name them "mig21", "f14", etc. and set their loadouts!
-            -- you can have multiple templates to randomly shuffle, ex: "mig21-1", "mig21-2", etc.
-    --
-
--- DEBUG TIP
--- If things aren't working, open powershell, and run this command (with your user name filled in):
---  Get-Content "C:\Users\your_user_name\Saved Games\DCS\Logs\dcs.log" -Wait -Tail 30
--- check for error messages after loading the mission has finished (but typically before you press "fly")
+-- REQUIRED STEPS IN THE MISSION EDITOR:
+-- 1. Place a delayed-spawn helicopter named "red-border", give it waypoints that draw out a boundary.
+        -- everywhere inside of this boundary, blue aircraft can be engaged, outside of this boundary, they are safe.
+-- 2. Place single "delayed spawn" planes to serve as templates for MOOSE, name them "mig21", "f14", etc. and set their loadouts!
+        -- you can have multiple templates to randomly shuffle, ex: "mig21-1", "mig21-2", etc.
+-- 3. Place enemy EW or AWACS radars (EWR 1L13, EWR 55G6, A-50)
+        -- only add one unit per group
+        -- set the group name for each to start with "ew" ex: "ew-kobuleti", "ew-2", etc.
+        -- only blue units that can be detected by these will have units scrambled to meet them
 
 
--- IADS SETUP
-dfcp_create_default_iads()
--- perform any additional setup (advanced)
--- TODO: advanced instructions
-dfcp_start_iads(DFCP_DEBUG)
+
+
+-- IADS SETUP -- TO DISABLE IADS, remove this section
+---------------------------------------------------------------------------------------------------------------------------
+-- IADS Steps                                                                                                            --
+    -- 1. make a static object named "iads-cp", this command post object will coordinate your sam sites and EW radars.   --
+    -- 2. make a static object named "iads-cp-power", this object powers your command post                               --
+    -- 3. place long range SAMs                                                                                          --
+        -- start the group name with "sam-"                                                                              --
+        -- the first unit in the group must be the search radar (if it has one) or the tracking radar                    --
+        -- one type of SAM per group                                                                                     --
+    -- 4. place short range SAM/AAA                                                                                      --
+        -- do not name these groups starting with "sam-", they will operate independent of IADS                          --
+    -- 5. place point defense (SA-15)                                                                                    --
+        -- don't name these groups starting with "sam-", they will operate independent of IADS                           --
+        -- TODO: instructions for making these participate in IADS                                                       --
+dfcp_create_default_iads()                                                                                               -- 
+-- perform any additional setup (advanced)                                                                               --
+-- TODO: advanced instructions                                                                                           --
+dfcp_start_iads(DFCP_DEBUG)                                                                                              --
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+
 
 
 -- A2A SETUP
 dfcp_create_default_dispatcher()
-
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 -- configure enemy flights

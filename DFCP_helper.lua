@@ -353,10 +353,15 @@ function dfcp_create_default_dispatcher()
     -- Setup the detection to group targets to a 15nm range (planes within 15nm of eachother are considered 1 "group")
     -- engagement decisions are based on the number of "groups" detected.
     DetectionSetGroup = SET_GROUP:New()
+    if redIADS == nil then
+        DetectionSetGroup:FilterPrefixes( { "ew" } )
+        DetectionSetGroup:FilterStart()
+    end
     Detection = DETECTION_AREAS:New( DetectionSetGroup, naut_miles_to_meters(15) )
+    A2ADispatcher = AI_A2A_DISPATCHER:New( Detection )
 
     -- Setup the A2A dispatcher, CAP will engage anything within 100nm, interceptors will scramble to anything within 100nm of the airport
-    A2ADispatcher = AI_A2A_DISPATCHER:New( Detection )
+    
     A2ADispatcher:SetEngageRadius(naut_miles_to_meters(100)) -- CAP range
     A2ADispatcher:SetGciRadius(naut_miles_to_meters(100)) -- Intercept range
 
@@ -386,7 +391,7 @@ function dfcp_start_mission()
 
         -- test to see which groups are added and removed to the SET_GROUP at runtime by Skynet:
         function outputNames()
-            env.info("IADS Radar Groups added by Skynet:")
+            env.info("Radar Groups used for dispatching:")
             env.info(DetectionSetGroup:GetObjectNames())
         end
         mist.scheduleFunction(outputNames, self, 1, 2)
@@ -394,7 +399,9 @@ function dfcp_start_mission()
 
     -- start the a2a dispatcher 
     A2ADispatcher:Start()
-    redIADS:addMooseSetGroup(DetectionSetGroup)
+    if redIADS ~= nil then
+        redIADS:addMooseSetGroup(DetectionSetGroup)
+    end
 end
 
 
