@@ -83,7 +83,7 @@ for i, coalition in ipairs{"red", "blue"} do
                         if unknown_list[unit_type] == nil then
                             if FORCE_OVERWRITE then
                                 unit_data["livery_id"] = LIVERY
-                                print("FORCING - " .. unit_type .. " - " .. unit_name .. " - " .. unit_livery .. " -> " .. chosen_livery)    
+                                print("FORCING - " .. unit_type .. " - " .. unit_name .. " - " .. unit_livery .. " -> " .. LIVERY)    
                             else
                                 unknown_list[unit_type] = true
                                 print("UNKNOWN - " .. unit_type .. " - " .. unit_name)
@@ -92,7 +92,7 @@ for i, coalition in ipairs{"red", "blue"} do
                     elseif chosen_table[unit_type] ~= nil then -- unit is in our lookup table, and it has a relevant skin
                         local chosen_livery = chosen_table[unit_type]
                         if unit_livery ~= chosen_livery then 
-                            unit_data["livery_id"] = chosen_livery 
+                            unit_data["livery_id"] = chosen_livery
                             print("UPDATED - " .. unit_type .. " - " .. unit_name .. " - " .. unit_livery .. " -> " .. chosen_livery)
                     end
                     else -- unit is in our lookup table, but we think the default is the best option
