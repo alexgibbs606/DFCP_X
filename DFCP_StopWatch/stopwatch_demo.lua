@@ -1,4 +1,4 @@
-require "DFCP_StopWatch.DFCP_stopwatch"
+require "DFCP_stopwatch.DFCP_stopwatch"
 
 print("Starting stop watch script in 5 seconds")
 
@@ -9,33 +9,33 @@ end
 
 wait(5)
 
-print(StopWatch:Start('proxy'))
+print(Stopwatch:Start('proxy'))
 
 wait(3)
 
-print(StopWatch:Start('nadel'))
+print(Stopwatch:Start('nadel'))
 
 wait(6)
 
-print(StopWatch:Lap('proxy'))
+print(Stopwatch:Lap('proxy'))
 
 wait(4)
 
-print(StopWatch:Lap('nadel'))
+print(Stopwatch:Lap('nadel'))
 
 wait(5)
 
-print(StopWatch:Penalty('proxy', 5, 'out of bounds'))
+print(Stopwatch:Penalty('proxy', 5, 'out of bounds'))
 
 wait(2)
 
-print(StopWatch:Lap('proxy'))
-print(StopWatch:Lap('nadel'))
-print(StopWatch:Stop('proxy'))
-print(StopWatch:Stop('nadel'))
+print(Stopwatch:Lap('proxy'))
+print(Stopwatch:Lap('nadel'))
+print(Stopwatch:Stop('proxy'))
+print(Stopwatch:Stop('nadel'))
 
 print('-----')
-print(StopWatch:GetStopWatchStatus('proxy'))
+print(Stopwatch:GetStopwatchStatus('proxy'))
 
-print(StopWatch:Start('nadel'))
-print(StopWatch:GetStopWatchStatus('nadel'))
+print(Stopwatch:Start('nadel'))
+print(Stopwatch:GetStopwatchStatus('nadel'))
