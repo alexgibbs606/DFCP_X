@@ -447,3 +447,30 @@ function low_alt_check(low_fly_zone_name, alt_limit_feet, group_name, stop_check
         end,
     {}, 0, 2) -- run this function every 2 seconds
 end
+
+
+--[[----------------------------------------------------------------------------------------------------------
+dfcp_logger
+
+Write a message to the DCS.log file if the env variable from Moose exists.
+
+Parameters:
+    message - string - the message to write to the DCS.log file
+    type - string - info, error
+------------------------------------------------------------------------------------------------------------]]
+function dfcp_logger(msg, type)
+    if env then
+        
+        if type == nil or type == 'info' then
+            env.info(msg)
+        end
+        
+        if type == 'error' then
+            env.error(msg)
+        end
+        
+    end
+end
+
+
+
