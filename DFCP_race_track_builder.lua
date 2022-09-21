@@ -240,32 +240,32 @@ function dfcp_race_point_to_point(track_name, start_zone, end_zone)
             local player_units = _DATABASE:GetPlayers()
             for player_name, unit_name in pairs(player_units) do
                 
-                mist.message.add({
-                    text = player_name .. " | " .. unit_name,
-                    displayTime = 1,
-                    msgFor = {coa={'all'}}
-                })
+                -- mist.message.add({
+                --     text = player_name .. " | " .. unit_name,
+                --     displayTime = 1,
+                --     msgFor = {coa={'all'}}
+                -- })
                 
                 local unit = UNIT:FindByName(unit_name)
                 
                 -- The person has spawned in but hasn't started the race
                 if track_racers[player_name] == nil then
                     dfcp_logger("DFCP - dfcp_race_point_to_point - SCHEDULER - new racer " .. player_name)
-                    mist.message.add({
-                        text = "New racer identified! " .. player_name,
-                        displayTime = 15,
-                        msgFor = {coa={'all'}}
-                    })
+                    -- mist.message.add({
+                    --     text = "New racer identified! " .. player_name,
+                    --     displayTime = 15,
+                    --     msgFor = {coa={'all'}}
+                    -- })
                     
                     track_racers[player_name] = {
                         progress_flag = 0
                     }
                 else
-                    mist.message.add({
-                        text = player_name .. " | " .. track_racers[player_name].progress_flag,
-                        displayTime = 1,
-                        msgFor = {coa={'all'}}
-                    })
+                    -- mist.message.add({
+                    --     text = player_name .. " | " .. track_racers[player_name].progress_flag,
+                    --     displayTime = 1,
+                    --     msgFor = {coa={'all'}}
+                    -- })
                 end
                 
                 
@@ -282,11 +282,11 @@ function dfcp_race_point_to_point(track_name, start_zone, end_zone)
                         
                         dfcp_logger(start_msg)
                         net.send_chat(start_msg)
-                        mist.message.add({
-                            text = start_msg,
-                            displayTime = 15,
-                            msgFor = {coa={'all'}}
-                        })
+                        -- mist.message.add({
+                        --     text = start_msg,
+                        --     displayTime = 15,
+                        --     msgFor = {coa={'all'}}
+                        -- })
                         
                     end
                     
@@ -308,16 +308,16 @@ function dfcp_race_point_to_point(track_name, start_zone, end_zone)
                     
                     dfcp_logger(stop_msg)
                     net.send_chat(stop_msg)
-                    mist.message.add({
-                        text = stop_msg,
-                        displayTime = 15,
-                        msgFor = {coa={'all'}}
-                    })
-                    mist.message.add({
-                        text = Stopwatch:GetStopwatchExportString(player_name),
-                        displayTime = 15,
-                        msgFor = {coa={'all'}}
-                    })
+                    -- mist.message.add({
+                    --     text = stop_msg,
+                    --     displayTime = 15,
+                    --     msgFor = {coa={'all'}}
+                    -- })
+                    -- mist.message.add({
+                    --     text = Stopwatch:GetStopwatchExportString(player_name),
+                    --     displayTime = 15,
+                    --     msgFor = {coa={'all'}}
+                    -- })
                     
                     pcall(function () 
                         BotSay(race_track_name .. "|" .. Stopwatch:GetStopwatchExportString(player_name))
