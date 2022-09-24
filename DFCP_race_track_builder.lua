@@ -63,109 +63,109 @@ function dfcp_race_track(track_name, start_zone, laps)
             local player_units = _DATABASE:GetPlayers()
             for player_name, unit_name in pairs(player_units) do
                 
-                -- mist.message.add({
-                --     text = player_name .. " | " .. unit_name,
-                --     displayTime = 15,
-                --     msgFor = {coa={'all'}}
-                -- })
+                pcall(function ()
                 
-                local unit = UNIT:FindByName(unit_name)
-                
-                -- The person has spawned in but hasn't started the race
-                if track_racers[player_name] == nil then
-                    dfcp_logger("DFCP - dfcp_race_track - SCHEDULER - new racer " .. player_name)
                     -- mist.message.add({
-                    --     text = "New racer identified! " .. player_name,
+                    --     text = player_name .. " | " .. unit_name,
                     --     displayTime = 15,
                     --     msgFor = {coa={'all'}}
                     -- })
                     
-                    track_racers[player_name] = {
-                        player_name = player_name,
-                        unit = unit,
-                        progress_flag = 0,
-                        lap = 0,
-                        finished = false
-                    }
-                end
-                
-                
-                if track_racers[player_name].finished == false and unit:IsInZone(track_start_line) then
-                    dfcp_logger("DFCP - dfcp_race_track - SCHEDULER - " .. player_name .. " in zone")
-                    -- Once the racer crosses the start line for the first time, kick it off for them
-                    if track_racers[player_name].progress_flag == 0 then
-                        track_racers[player_name].progress_flag = 1
-                        track_racers[player_name].lap = 1
+                    -- The person has spawned in but hasn't started the race
+                    if track_racers[player_name] == nil then
+                        dfcp_logger("DFCP - dfcp_race_track - SCHEDULER - new racer " .. player_name)
                         
-                        dfcp_logger("DFCP - dfcp_race_track - SCHEDULER - " .. player_name .. " start!")
+                        mist.message.add({
+                            text = "New racer identified! Welcome " .. player_name .. '!',
+                            displayTime = 15,
+                            msgFor = {units={unit_name}}
+                        })
                         
-                        local start_msg = Stopwatch:Start(player_name)
-                        
-                        dfcp_logger(start_msg)
-                        net.send_chat(start_msg)
-                        -- mist.message.add({
-                        --     text = start_msg,
-                        --     displayTime = 15,
-                        --     msgFor = {coa={'all'}}
-                        -- })
-                        
-                    end
-                    
-                    -- When the racer enters the start line, check to see if they're completing a lap
-                    if math.fmod(track_racers[player_name].progress_flag, 2) == 0 then
-                        
-                        track_racers[player_name].progress_flag = track_racers[player_name].progress_flag + 1
-                        track_racers[player_name].lap = track_racers[player_name].lap + 1
-                        
-                        local lap_msg = Stopwatch:Lap(player_name)
-                        
-                        dfcp_logger(lap_msg)
-                        net.send_chat(lap_msg)
-                        -- mist.message.add({
-                        --     text = lap_msg,
-                        --     displayTime = 15,
-                        --     msgFor = {coa={'all'}}
-                        -- })
-                        
-                        if track_racers[player_name].lap > track_lap_count then
-                            track_racers[player_name].finished = true
-                            
-                            local stop_msg = Stopwatch:Stop(player_name)
-                            
-                            dfcp_logger(stop_msg)
-                            net.send_chat(stop_msg)
-                            -- mist.message.add({
-                            --     text = stop_msg,
-                            --     displayTime = 15,
-                            --     msgFor = {coa={'all'}}
-                            -- })
-                            
-                            pcall(function () 
-                                BotSay(race_track_name.."|"..Stopwatch:GetStopwatchExportString(player_name))
-                            end)
-                            
-                        end
-                        
-                        
-                    end
-                end
-                
-                -- When they leave the start zone allow them to trigger the next lap
-                if unit:IsNotInZone(track_start_line) then
-                    if math.fmod(track_racers[player_name].progress_flag, 2) == 1 then
-                        track_racers[player_name].progress_flag = track_racers[player_name].progress_flag + 1
-                    end
-                    
-                    if track_racers[player_name].finished == true then
                         track_racers[player_name] = {
                             player_name = player_name,
-                            unit = unit,
                             progress_flag = 0,
                             lap = 0,
                             finished = false
                         }
+                        
+                    elseif track_racers[player_name].finished == false and UNIT:FindByName(unit_name):IsInZone(track_start_line) then
+                        -- Once the racer crosses the start line for the first time, kick it off for them
+                        
+                        dfcp_logger("DFCP - dfcp_race_track - SCHEDULER - " .. player_name .. " in zone")
+                        
+                        if track_racers[player_name].progress_flag == 0 then
+                            track_racers[player_name].progress_flag = 1
+                            track_racers[player_name].lap = 1
+                            
+                            dfcp_logger("DFCP - dfcp_race_track - SCHEDULER - " .. player_name .. " start!")
+                            
+                            local start_msg = Stopwatch:Start(player_name)
+                            
+                            dfcp_logger(start_msg)
+                            net.send_chat(start_msg)
+                            
+                            mist.message.add({
+                                text = 'GO!',
+                                displayTime = 5,
+                                msgFor = {units={unit_name}}
+                            })
+                            
+                            
+                        elseif math.fmod(track_racers[player_name].progress_flag, 2) == 0 then
+                            -- When the racer enters the start line, check to see if they're completing a lap
+                            
+                            track_racers[player_name].progress_flag = track_racers[player_name].progress_flag + 1
+                            track_racers[player_name].lap = track_racers[player_name].lap + 1
+                            
+                            local lap_msg = Stopwatch:Lap(player_name)
+                            
+                            dfcp_logger(lap_msg)
+                            net.send_chat(lap_msg)
+                            -- mist.message.add({
+                            --     text = lap_msg,
+                            --     displayTime = 15,
+                            --     msgFor = {coa={'all'}}
+                            -- })
+                            
+                            if track_racers[player_name].lap > track_lap_count then
+                                track_racers[player_name].finished = true
+                                
+                                local stop_msg = Stopwatch:Stop(player_name)
+                                
+                                dfcp_logger(stop_msg)
+                                net.send_chat(stop_msg)
+                                
+                                mist.message.add({
+                                    text = 'Finish! ' .. stop_msg,
+                                    displayTime = 30,
+                                    msgFor = {units={unit_name}}
+                                })
+                                
+                                pcall(function () 
+                                    BotSay(race_track_name.."|"..Stopwatch:GetStopwatchExportString(player_name))
+                                end)
+                                
+                            end
+                        end
+                    
+                    elseif UNIT:FindByName(unit_name):IsNotInZone(track_start_line) then
+                        -- When they leave the start zone allow them to trigger the next lap
+                        
+                        if math.fmod(track_racers[player_name].progress_flag, 2) == 1 then
+                            track_racers[player_name].progress_flag = track_racers[player_name].progress_flag + 1
+                        end
+                        
+                        if track_racers[player_name].finished == true then
+                            track_racers[player_name] = {
+                                player_name = player_name,
+                                unit = unit,
+                                progress_flag = 0,
+                                lap = 0,
+                                finished = false
+                            }
+                        end
                     end
-                end
+                end)
                 
             end
         end,
@@ -240,99 +240,102 @@ function dfcp_race_point_to_point(track_name, start_zone, end_zone)
             local player_units = _DATABASE:GetPlayers()
             for player_name, unit_name in pairs(player_units) do
                 
-                -- mist.message.add({
-                --     text = player_name .. " | " .. unit_name,
-                --     displayTime = 1,
-                --     msgFor = {coa={'all'}}
-                -- })
                 
-                local unit = UNIT:FindByName(unit_name)
-                
-                -- The person has spawned in but hasn't started the race
-                if track_racers[player_name] == nil then
-                    dfcp_logger("DFCP - dfcp_race_point_to_point - SCHEDULER - new racer " .. player_name)
-                    -- mist.message.add({
-                    --     text = "New racer identified! " .. player_name,
-                    --     displayTime = 15,
-                    --     msgFor = {coa={'all'}}
-                    -- })
+                pcall(function ()
                     
-                    track_racers[player_name] = {
-                        progress_flag = 0
-                    }
-                else
                     -- mist.message.add({
-                    --     text = player_name .. " | " .. track_racers[player_name].progress_flag,
+                    --     text = player_name .. " | " .. unit_name,
                     --     displayTime = 1,
                     --     msgFor = {coa={'all'}}
                     -- })
-                end
-                
-                
-                if track_racers[player_name].progress_flag == 0 and unit:IsInZone(track_start_line) then
-                    dfcp_logger("DFCP - dfcp_race_point_to_point - SCHEDULER - " .. player_name .. " in zone")
                     
-                    -- Once the racer crosses the start line for the first time, kick it off for them
-                    if track_racers[player_name].progress_flag == 0 then
-                        track_racers[player_name].progress_flag = 1
+                    -- The person has spawned in but hasn't started the race
+                    if track_racers[player_name] == nil then
+                        dfcp_logger("DFCP - dfcp_race_point_to_point - SCHEDULER - new racer " .. player_name)
                         
-                        dfcp_logger("DFCP - dfcp_race_point_to_point - SCHEDULER - " .. player_name .. " start!")
+                        mist.message.add({
+                            text = "New racer identified! Welcome " .. player_name .. '!',
+                            displayTime = 15,
+                            msgFor = {units={unit_name}}
+                        })
                         
-                        local start_msg = Stopwatch:Start(player_name)
+                        track_racers[player_name] = {
+                            progress_flag = 0
+                        }
+                    -- else
+                    --     mist.message.add({
+                    --         text = player_name .. " | " .. track_racers[player_name].progress_flag,
+                    --         displayTime = 1,
+                    --         msgFor = {coa={'all'}}
+                    --     })
+                    
+                    elseif (track_racers[player_name].progress_flag == 0 or track_racers[player_name].progress_flag == 2) and UNIT:FindByName(unit_name):IsInZone(track_start_line) then
+                        dfcp_logger("DFCP - dfcp_race_point_to_point - SCHEDULER - " .. player_name .. " in start zone")
                         
-                        dfcp_logger(start_msg)
-                        net.send_chat(start_msg)
+                        -- Once the racer crosses the start line for the first time, kick it off for them
+                        if track_racers[player_name].progress_flag == 0 or track_racers[player_name].progress_flag == 2 then
+                            track_racers[player_name].progress_flag = 1
+                            
+                            dfcp_logger("DFCP - dfcp_race_point_to_point - SCHEDULER - " .. player_name .. " start!")
+                            
+                            local start_msg = Stopwatch:Start(player_name)
+                            
+                            dfcp_logger(start_msg)
+                            net.send_chat(start_msg)
+                            
+                            mist.message.add({
+                                text = 'GO!',
+                                displayTime = 5,
+                                msgFor = {units={unit_name}}
+                            })
+                            
+                        end
+                        
+                        -- When they leave the start zone allow them to trigger the finish
+                    elseif track_racers[player_name].progress_flag == 1 and UNIT:FindByName(unit_name):IsNotInZone(track_start_line) then
+                        dfcp_logger("DFCP - dfcp_race_point_to_point - SCHEDULER - " .. player_name .. " left start zone")
+                        track_racers[player_name].progress_flag = track_racers[player_name].progress_flag + 1
+                        
+                        -- Check for the racer in the finish zone
+                    elseif track_racers[player_name].progress_flag == 2 and UNIT:FindByName(unit_name):IsInZone(track_finish_line) then
+                        dfcp_logger("DFCP - dfcp_race_point_to_point - SCHEDULER - " .. player_name .. " in finish zone")
+                        
+                        local stop_msg = Stopwatch:Stop(player_name)
+                        
+                        dfcp_logger(stop_msg)
+                        net.send_chat(stop_msg)
+                        
                         -- mist.message.add({
-                        --     text = start_msg,
+                        --     text = stop_msg,
+                        --     displayTime = 15,
+                        --     msgFor = {coa={'all'}}
+                        -- })
+                        -- mist.message.add({
+                        --     text = Stopwatch:GetStopwatchExportString(player_name),
                         --     displayTime = 15,
                         --     msgFor = {coa={'all'}}
                         -- })
                         
-                    end
-                    
-                end
-                
-                
-                -- When they leave the start zone allow them to trigger the finish
-                if unit:IsNotInZone(track_start_line) then
-                    if track_racers[player_name].progress_flag == 1 then
+                        mist.message.add({
+                            text = 'Finish! ' .. stop_msg,
+                            displayTime = 30,
+                            msgFor = {units={unit_name}}
+                        })
+                        
+                        pcall(function () 
+                            BotSay(race_track_name .. "|" .. Stopwatch:GetStopwatchExportString(player_name))
+                        end)
+                        
                         track_racers[player_name].progress_flag = track_racers[player_name].progress_flag + 1
+                        
+                        -- When they leave the finish zone reset them
+                    elseif track_racers[player_name].progress_flag == 3 and UNIT:FindByName(unit_name):IsNotInZone(track_finish_line) then
+                        dfcp_logger("DFCP - dfcp_race_point_to_point - SCHEDULER - " .. player_name .. " left finish zone")
+                        track_racers[player_name] = {
+                            progress_flag = 0
+                        }
                     end
-                end
-                
-                
-                -- Check for the racer in the finish zone
-                if track_racers[player_name].progress_flag == 2 and unit:IsInZone(track_finish_line) then
-                    
-                    local stop_msg = Stopwatch:Stop(player_name)
-                    
-                    dfcp_logger(stop_msg)
-                    net.send_chat(stop_msg)
-                    -- mist.message.add({
-                    --     text = stop_msg,
-                    --     displayTime = 15,
-                    --     msgFor = {coa={'all'}}
-                    -- })
-                    -- mist.message.add({
-                    --     text = Stopwatch:GetStopwatchExportString(player_name),
-                    --     displayTime = 15,
-                    --     msgFor = {coa={'all'}}
-                    -- })
-                    
-                    pcall(function () 
-                        BotSay(race_track_name .. "|" .. Stopwatch:GetStopwatchExportString(player_name))
-                    end)
-                    
-                    track_racers[player_name].progress_flag = track_racers[player_name].progress_flag + 1
-                    
-                end
-                
-                -- Reset the player after they leave the finish zone
-                if track_racers[player_name].progress_flag == 3 and unit:IsNotInZone(track_finish_line) then
-                    track_racers[player_name] = {
-                        progress_flag = 0
-                    }
-                end
+                end)
                 
             end
         end,
