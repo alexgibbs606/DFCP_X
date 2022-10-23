@@ -4,6 +4,7 @@
 
 -- which aircraft are we supporting (keys for lookup)
 local aircraft_list = {"default",
+                       "bf109k4",
                        "f4",
                        "f5",
                        "f14a",
@@ -12,6 +13,8 @@ local aircraft_list = {"default",
                        "f15e",
                        "f16",
                        "f16cm",
+                       "fw190a8",
+                       "fw190d9",
                        "j11a",
                        "jf17",
                        "mig15",
@@ -50,15 +53,28 @@ local aircraft_list = {"default",
 local patrol_reference_05k = {}
 patrol_reference_05k["default"] = 605
 patrol_reference_05k["mig21"] = 700
+patrol_reference_05k["bf109k4"] = 333
+patrol_reference_05k["fw190a8"] = 333
+patrol_reference_05k["fw190d9"] = 333
 
 local patrol_reference_10k = {}
 patrol_reference_10k["default"] = 610
+patrol_reference_10k["bf109k4"] = 333
+patrol_reference_10k["fw190a8"] = 333
+patrol_reference_10k["fw190d9"] = 333
+
 
 local patrol_reference_15k = {}
 patrol_reference_15k["default"] = 615
+patrol_reference_15k["bf109k4"] = 333
+patrol_reference_15k["fw190a8"] = 333
+patrol_reference_15k["fw190d9"] = 333
 
 local patrol_reference_20k = {}
 patrol_reference_20k["default"] = 620
+patrol_reference_20k["bf109k4"] = 333
+patrol_reference_20k["fw190a8"] = 333
+patrol_reference_20k["fw190d9"] = 333
 
 local patrol_reference_30k = {}
 patrol_reference_30k["default"] = 630
