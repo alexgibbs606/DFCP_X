@@ -252,28 +252,28 @@ function Stopwatch:TimeFormat(time)
     local hour, minutes, seconds, mili = 0, 0, 0, 0
     local hour_s, minutes_s, seconds_s, mili_s = '', '', '', ''
     
-    hour = math.floor(time / 3600000)
+    hour = math.floor(time / 3600)
     if hour < 10 then
         hour_s = "0" .. hour
     else
         hour_s = hour .. ''
     end
     
-    minutes = math.floor((time - (hour*3600000))/60000)
+    minutes = math.floor((time-math.floor(time/3600)*3600)/60)
     if minutes < 10 then
         minutes_s = "0" .. minutes
     else
         minutes_s = minutes .. ''
     end
     
-    seconds = math.floor((time - (hour*3600000) - (minutes*60000))/1000)
+    seconds = math.floor(time-math.floor(time/3600)*3600-math.floor((time-math.floor(time/3600)*3600)/60)*60)
     if seconds < 10 then
         seconds_s = "0" .. seconds
     else
         seconds_s = seconds .. ''
     end
     
-    mili = time - (hour*3600000) - (minutes*60000) - (seconds*1000);
+    mili = time - math.floor((time-math.floor(time/3600)*3600-math.floor((time-math.floor(time/3600)*3600)/60)*60-math.floor(time-math.floor(time/3600)*3600-math.floor((time-math.floor(time/3600)*3600)/60)*60))*100)
     if mili < 10 then
         mili_s = "0" .. mili
     else
