@@ -92,6 +92,7 @@ function Stopwatch:Start(unitName)
     
     print("Stop watch created for " .. unitName)
     print(Stopwatches[unitName].startTime)
+    dfcp_logger("DFCP Stopwatch - Start - " .. unitName)
     
     return unitName .. " | " .. "Stop watch started"
 end
@@ -138,6 +139,7 @@ function Stopwatch:Lap(unitName)
             
             print("Lap created for " .. unitName)
             print(unitName .. " | Lap " .. #Stopwatches[unitName].laps .. " | " .. lap.lapStart .. " | " .. lap.lapEnd .. " | " .. lap.lapTime .. " | " .. lap.display .. " | " .. lap.lapPenalty .. " | " .. lap.lapPenaltyCount)
+            dfcp_logger("DFCP Stopwatch - Lap - " .. unitName .. " | Lap " .. #Stopwatches[unitName].laps .. " | " .. lap.lapStart .. " | " .. lap.lapEnd .. " | " .. lap.lapTime .. " | " .. lap.display .. " | " .. lap.lapPenalty .. " | " .. lap.lapPenaltyCount)
             
             if lap.lapPenaltyCount > 0 then
                 return unitName .. " | Lap " .. #Stopwatches[unitName].laps .. " | " .. lap.display .. " | " .. lap.lapPenalty .. " second penalty"
@@ -197,7 +199,7 @@ end
 -- Return:
 --     string - friendly message displaying the total duration of the stop watch
 ------------------------------------------------------------------------------------------------------------
-function Stopwatch:Stop(unitName, closeLap)
+function Stopwatch:Stop(unitName)
     
     if Stopwatches[unitName] == nil then
         return
@@ -210,6 +212,7 @@ function Stopwatch:Stop(unitName, closeLap)
             
             print("Stop watch stopped for " .. unitName)
             print(unitName .. " | " .. Stopwatches[unitName].startTime .. " | " .. Stopwatches[unitName].endTime .. " | " .. Stopwatches[unitName].duration .. " | " .. Stopwatches[unitName].display .. " | " .. Stopwatches[unitName].penalty .. " | " .. Stopwatches[unitName].penaltyCount)
+            dfcp_logger("DFCP Stopwatch - Stop - " .. unitName .. " | " .. Stopwatches[unitName].startTime .. " | " .. Stopwatches[unitName].endTime .. " | " .. Stopwatches[unitName].duration .. " | " .. Stopwatches[unitName].display .. " | " .. Stopwatches[unitName].penalty .. " | " .. Stopwatches[unitName].penaltyCount)
             
             if Stopwatches[unitName].penaltyCount > 0 then
                 return unitName .. " | Total Time | " .. Stopwatches[unitName].display .. " | including " .. Stopwatches[unitName].penalty .. " seconds in penalties"
@@ -249,30 +252,28 @@ function Stopwatch:TimeFormat(time)
     local hour, minutes, seconds, mili = 0, 0, 0, 0
     local hour_s, minutes_s, seconds_s, mili_s = '', '', '', ''
     
-    hour = math.floor(time / 3600)
+    hour = math.floor(time / 3600000)
     if hour < 10 then
         hour_s = "0" .. hour
     else
         hour_s = hour .. ''
     end
     
-    minutes = math.floor((time - math.floor(time / 3600) * 3600) / 60)
+    minutes = math.floor((time - (hour*3600000))/60000)
     if minutes < 10 then
         minutes_s = "0" .. minutes
     else
         minutes_s = minutes .. ''
     end
     
-    seconds = math.floor(time - math.floor(time / 3600) * 3600 - math.floor((time - math.floor(time / 3600) * 3600) / 60) * 60)
+    seconds = math.floor((time - (hour*3600000) - (minutes*60000))/1000)
     if seconds < 10 then
         seconds_s = "0" .. seconds
     else
         seconds_s = seconds .. ''
     end
     
-    mili = math.floor((
-        time - math.floor(time / 3600) * 3600 - math.floor((time - math.floor(time / 3600) * 3600) / 60) * 60 -
-        math.floor(time - math.floor(time / 3600) * 3600 - math.floor((time - math.floor(time / 3600) * 3600) / 60) * 60)) * 100)
+    mili = time - (hour*3600000) - (minutes*60000) - (seconds*1000);
     if mili < 10 then
         mili_s = "0" .. mili
     else
@@ -294,7 +295,7 @@ end
 --     StopwatchObject | {} - the whole stop watch object associated to the specified unitName
 ------------------------------------------------------------------------------------------------------------
 function Stopwatch:GetStopwatch(unitName)
-    if next(Stopwatches, unitName) == nil then
+    if Stopwatches[unitName] == nil then
         return {}
     else
         return Stopwatches[unitName]
@@ -303,9 +304,9 @@ end
 
 
 ------------------------------------------------------------------------------------------------------------
--- GetStopwatchStatus
+-- GetStopwatchExportString
 --
--- Returns the status of the stop watch 
+-- Returns a DFCP formatted string of the player's race data for the DFCPBot to process
 --
 -- Parameters:
 --     unitName - string - the identifier of the unit the stop watch belongs to
@@ -314,14 +315,28 @@ end
 --     string - "DNF" if the stop watch does not exist or is not yet stopped or a friendly message with the
 --              total time duration of the stop watch
 ------------------------------------------------------------------------------------------------------------
-function Stopwatch:GetStopwatchStatus(unitName)
-    if next(Stopwatches, unitName) == nil then
+function Stopwatch:GetStopwatchExportString(unitName)
+    if Stopwatches[unitName] == nil then
+        dfcp_logger("DFCP Stopwatch - GetStopwatchExportString - " .. unitName .. " not found in Stopwatches")
         return "DNF"
     else
         if Stopwatches[unitName].endTime == 0 then
-            return unitName .. " | Total Time | DNF"
+            dfcp_logger("DFCP Stopwatch - GetStopwatchExportString - " .. unitName .. " end time = 0")
+            return unitName .. "|DNF"
         else
-            return unitName .. " | Total Time | " .. Stopwatches[unitName].display
+            local msg = unitName
+            
+            if Stopwatches[unitName].laps ~= nil then
+                for i, lap in pairs(Stopwatches[unitName].laps) do
+                    msg = msg .. "|" .. lap.lapTime
+                end
+            end
+            
+            msg = msg .. "|" .. Stopwatches[unitName].display
+            
+            dfcp_logger("DFCP Stopwatch - GetStopwatchExportString - " .. msg)
+            
+            return msg
         end
     end
 end
