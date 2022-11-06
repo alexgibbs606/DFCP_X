@@ -60,3 +60,19 @@ dfcp_cap_create_simple("mig29s", AIRBASE.Syria.Kuweires , "cap-zone-1", 15000, 2
 
 -- kick it all off
 dfcp_start_mission()
+
+
+-- GROUND UNIT SPAWNING
+-- Reference the DFCP_template_example.miz for how these are used. (it was generated with these lines not commented out)
+-- dfcp_unit_spawner("red-spawner-1", -- a group whose waypoints are copied to every spawned group
+--                   {"red-1", "red-2", "red-3"}, -- groups that will be randomly selected from to spawn
+--                   {"red-spawn-1", "red-spawn-2", "red-spawn-3"}, -- names of zones that groups will be randomly spawned in
+--                   30, -- max *units* alive at once from this spawner
+--                   0, -- number of groups that can be spawned (0 = infinite)
+--                   0, -- randomize waypoints by this many meters
+--                   90, -- compass heading of the group when spawned
+--                   30) -- number of seconds (+/-50%) between spawning groups
+-- dfcp_unit_spawner("blue-spawner-1", {"blue-1", "blue-2", "blue-3"}, {"blue-spawn-1", "blue-spawn-2", "blue-spawn-3"}, 30, 0, 0, 90, 30)
+
+-- dfcp_unit_spawner("red-emplacement", {"red-emplacement-1", "red-emplacement-2"}, {"east-facing", }, 1000, 4, 0, 90, 1)
+-- dfcp_unit_spawner("blue-emplacement", {"blue-emplacement-1", "blue-emplacement-2"}, {"west-facing", }, 1000, 4, 0, 270, 1)

@@ -194,7 +194,28 @@ function get_intercept_speed(aircraft, altitude_feet)
     return get_speed(ref_altitude, aircraft, altitude_feet)
 end
 
+function dfcp_logger(msg, type)
+    --[[----------------------------------------------------------------------------------------------------------
+    dfcp_logger
 
+    Write a message to the DCS.log file if the env variable from Moose exists.
+
+    Parameters:
+        message - string - the message to write to the DCS.log file
+        type - string - info, error
+    ------------------------------------------------------------------------------------------------------------]]
+    if env then
+        
+        if type == nil or type == 'info' then
+            env.info(msg)
+        end
+        
+        if type == 'error' then
+            env.error(msg)
+        end
+        
+    end
+end
 
 
 
@@ -226,6 +247,7 @@ function dfcp_interceptors_create(moose_name, dcs_unit_prefix, plane_type, airpo
     
 end
 
+
 function dfcp_interceptors_create_simple(unit_prefix_and_type, airport, groups_of, stockpile_count)
     -- Simpler option to create a stockpile of planes to be used as interceptors.
     -- CONDITION: the template plane in the DCS editor, must be a plane name in "aircraft_list". Ex: "mig21", "f4"
@@ -241,6 +263,7 @@ function dfcp_interceptors_create_simple(unit_prefix_and_type, airport, groups_o
     dfcp_interceptors_create(moose_name, unit_prefix_and_type, unit_prefix_and_type, airport, groups_of, stockpile_count)
 end
 
+
 function dfcp_interceptors_set_difficulty(difficulty_factor)
     -- difficulty_value: 1.0 means evenly matched, 2.0 means 2-to-1 in their favor, 0.5 means 2-to-1 in our favor
     for index, squadron_name in ipairs(interceptor_squadrons) do
@@ -248,13 +271,12 @@ function dfcp_interceptors_set_difficulty(difficulty_factor)
     end
 end
 
+
 function dfcp_interceptors_set_air_spawn()
     for index, squadron_name in ipairs(interceptor_squadrons) do
         A2ADispatcher:SetSquadronTakeoffInAir(squadron_name)
     end
 end
-
-
 
 
 local known_cap_zones = {}
@@ -305,7 +327,6 @@ function dfcp_cap_create(moose_name, dcs_unit_prefix, plane_type, airport, cap_z
 end
 
 
-
 function dfcp_cap_create_simple(unit_prefix_and_type, airport, cap_zone_name, altitude_ft, groups_of, stockpile_count )
     -- Create a CAP flight that can replenish losses or RTB's, used for CAP *only*!
     -- NOTE: every CAP flight created can launch simultaneously, regardless of detected threat!
@@ -323,6 +344,7 @@ function dfcp_cap_create_simple(unit_prefix_and_type, airport, cap_zone_name, al
     dfcp_cap_create(moose_name, unit_prefix_and_type, unit_prefix_and_type, airport, cap_zone_name, altitude_ft, groups_of, stockpile_count)
 end
 
+
 function dfcp_create_default_iads()
     -- initial setup for IADS, using default settings
     redIADS = SkynetIADS:create('red')
@@ -333,6 +355,7 @@ function dfcp_create_default_iads()
     local iads_command_power = StaticObject.getByName("iads-cp-power")
     redIADS:addCommandCenter(iads_command):addPowerSource(iads_command_power)
 end
+
 
 function dfcp_start_iads(debug)
     -- start the iads
@@ -360,8 +383,6 @@ function dfcp_start_iads(debug)
     end
 
 end
-
-
 
 
 function dfcp_create_default_dispatcher()
@@ -397,8 +418,6 @@ function dfcp_create_default_dispatcher()
         A2ADispatcher:SetDefaultCapTimeInterval(300, 900) -- check cap every 5-15 minutes
     end
 end
-
-
 
 
 function dfcp_start_mission()
@@ -465,29 +484,31 @@ function low_alt_check(low_fly_zone_name, alt_limit_feet, group_name, stop_check
     {}, 0, 2) -- run this function every 2 seconds
 end
 
+function dfcp_unit_spawner(waypoint_group, group_list, zone_list, max_units_alive, reinforcement_groups, route_random_factor, heading, wave_timer)
+    -- spawn selected groups of units randomly inside selected zones
+    --args:
+    --  waypoint_group: name of a delayed spawn group that has waypoints which will be copied to spawned groups
+    --  group_list: list of group names which will be copied, then spawned by the spawner
+    --  zone_list: list of zone names where units can spawn. Each group spawned will randomly select between the provided zones
+    --  max_units_alive: limit for the number of units (not groups) that can be alive at once
+    --  reinforcement_groups: total number of groups that can be spawned by this spawner over the course of the mission (0 = infinite)
+    --  route_random_factor: randomize waypoints within a circle of this many meters of waypoint_group's actual waypoint (1900m = 1nmi)
+    --  heading: approximate facing of groups when spawned
+    --  wave_timer: number of seconds (+/- 50%) between spawns
 
---[[----------------------------------------------------------------------------------------------------------
-dfcp_logger
-
-Write a message to the DCS.log file if the env variable from Moose exists.
-
-Parameters:
-    message - string - the message to write to the DCS.log file
-    type - string - info, error
-------------------------------------------------------------------------------------------------------------]]
-function dfcp_logger(msg, type)
-    if env then
-        
-        if type == nil or type == 'info' then
-            env.info(msg)
-        end
-        
-        if type == 'error' then
-            env.error(msg)
-        end
-        
+    -- build the table of zones to spawn in
+    local zone_table = {}
+    for index, zone_name in ipairs(zone_list) do
+        zone_table[#zone_table+1] = ZONE:New(zone_name)
     end
+
+     local spawn_time_variation_percent = 0.5 -- causes the +/-50% in wave timer
+
+    spawn = SPAWN:NewWithAlias(waypoint_group, waypoint_group)
+    :InitLimit(max_units_alive, reinforcement_groups)
+    :InitRandomizeZones(zone_table)
+    :InitRandomizeTemplate(group_list)
+    :SpawnScheduled(wave_timer, spawn_time_variation_percent)
+    :InitRandomizeRoute(1,100, route_random_factor)
+    :InitGroupHeading(heading, heading, 10)
 end
-
-
-
