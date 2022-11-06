@@ -484,3 +484,31 @@ function low_alt_check(low_fly_zone_name, alt_limit_feet, group_name, stop_check
     {}, 0, 2) -- run this function every 2 seconds
 end
 
+function dfcp_unit_spawner(waypoint_group, group_list, zone_list, max_units_alive, reinforcement_groups, route_random_factor, heading, wave_timer)
+    -- spawn selected groups of units randomly inside selected zones
+    --args:
+    --  waypoint_group: name of a delayed spawn group that has waypoints which will be copied to spawned groups
+    --  group_list: list of group names which will be copied, then spawned by the spawner
+    --  zone_list: list of zone names where units can spawn. Each group spawned will randomly select between the provided zones
+    --  max_units_alive: limit for the number of units (not groups) that can be alive at once
+    --  reinforcement_groups: total number of groups that can be spawned by this spawner over the course of the mission (0 = infinite)
+    --  route_random_factor: randomize waypoints within a circle of this many meters of waypoint_group's actual waypoint (1900m = 1nmi)
+    --  heading: approximate facing of groups when spawned
+    --  wave_timer: number of seconds (+/- 50%) between spawns
+
+    -- build the table of zones to spawn in
+    local zone_table = {}
+    for index, zone_name in ipairs(zone_list) do
+        zone_table[#zone_table+1] = ZONE:New(zone_name)
+    end
+
+     local spawn_time_variation_percent = 0.5 -- causes the +/-50% in wave timer
+
+    spawn = SPAWN:NewWithAlias(waypoint_group, waypoint_group)
+    :InitLimit(max_units_alive, reinforcement_groups)
+    :InitRandomizeZones(zone_table)
+    :InitRandomizeTemplate(group_list)
+    :SpawnScheduled(wave_timer, spawn_time_variation_percent)
+    :InitRandomizeRoute(1,100, route_random_factor)
+    :InitGroupHeading(heading, heading, 10)
+end
