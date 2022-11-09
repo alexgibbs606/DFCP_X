@@ -379,7 +379,7 @@ function dfcp_start_iads(debug)
             iadsDebug.earlyWarningRadarStatusEnvOutput = false
             iadsDebug.commandCenterStatusEnvOutput = false
     else -- NORMAL MISSION START
-        redIADS:setupSAMSitesAndThenActivate()
+        redIADS:activate()
     end
 
 end
