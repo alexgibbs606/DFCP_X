@@ -3,6 +3,8 @@ mission_io = {}
 mission_io.read_mission = function(mission_file_path)
     -- read in the mission file
     local handle = io.open(mission_file_path,'rb')
+	-- Checking for file errors or non-existing file
+	if handle == nil then error('Mission file `' .. mission_file_path .. '` not found.') end
     local raw_data_str  = handle:read("*a")
     handle:close()
     local raw_data_lua = raw_data_str .. "\n return mission" 
@@ -12,7 +14,9 @@ end
 
 -- main function to dump the updated mission.lua
 mission_io.write_mission = function(filepath, mission_data)
-    file = io.open(filepath, "w+")
+    local file = io.open(filepath, "w+")
+	-- Checking for file errors
+	if file == nil then error('Cannot open mission file `' .. filepath .. '` for writing.') end
     file:write("mission = ")
     mission_io.serialize_inner(file, mission_data, "  ")
     io.close(file)
