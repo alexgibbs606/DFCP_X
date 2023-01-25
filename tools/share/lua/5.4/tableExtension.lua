@@ -1,9 +1,7 @@
-x = {}
-
 local inspect = require 'inspect'
 
 
-x.contains = function(refTable, searchField, caseSensitive)
+table.contains = function(searchField, refTable, caseSensitive)
 	-- By default we're case sensitive
 	caseSensitive = caseSensitive or true
 
@@ -12,7 +10,7 @@ x.contains = function(refTable, searchField, caseSensitive)
 		-- Lower once here to improve performance
 		searchField = string.lower(searchField)
 
-		for _, value in refTable do
+		for _, value in pairs(refTable) do
 			-- We process our return here to increase performance
 			if searchField == string.lower(value) then return true end
 		end
