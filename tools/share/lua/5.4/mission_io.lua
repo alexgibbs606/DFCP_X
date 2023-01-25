@@ -1,3 +1,5 @@
+require 'tableExtension'
+
 mission_io = {}
 
 mission_io.read_mission = function(mission_file_path)
@@ -53,12 +55,12 @@ mission_io.serialize_inner = function(file, o, indent)
 end
 
 
-mission_io.get_groups = function(mission, coalition, country, type)
+mission_io.get_groups = function(mission, coalition, country, unit_type)
 	-- Checking optional parameters
 	if mission.mission ~= nil then
 		if type(mission.coalition) == 'string' then coalition = {mission.coalition} else coalition = mission.coalition end
 		if type(mission.country) == 'string' then country = {mission.country} else country = mission.country end
-		if type(mission.type) == 'string' then type = {mission.type} else type = mission.type end
+		if type(mission.unit_type) == 'string' then unit_type = {mission.unit_type} else unit_type = mission.unit_type end
 		mission = mission.mission
 	end
 
@@ -69,7 +71,7 @@ mission_io.get_groups = function(mission, coalition, country, type)
 	for _, group_coalition in pairs(mission.coalition) do
 
 		-- Filtering out coalitions we didn't ask for
-		if not x.contains(group_coalition.name, coalition or {'red', 'blue', 'neutrals'}, false) then
+		if not table.contains(group_coalition.name, coalition or {'red', 'blue', 'neutrals'}, false) then
 			goto continue_coalition
 		end -- If we didn't filter, we want this group of units
 
@@ -77,7 +79,7 @@ mission_io.get_groups = function(mission, coalition, country, type)
 		for _, group_country in pairs(group_coalition.country) do
 
 			-- Filtering out countries we didn't ask for
-			if not x.contains(group_country.name, country or {'usa', 'russia'}, false) then
+			if not table.contains(group_country.name, country or {'usa', 'russia'}, false) then
 				goto continue_country
 			end -- If we didn't filter, we want this country
 
@@ -85,13 +87,13 @@ mission_io.get_groups = function(mission, coalition, country, type)
 			for group_type, group_table in pairs(group_country) do
 
 				-- Since types are stored differe, we can look for the types requested instead of filtering them out
-				if x.contains(group_type, type or {'ship', 'plane', 'static'}, false) then
+				if table.contains(group_type, unit_type or {'ship', 'plane', 'static'}, false) then
 
 					-- Iterating through each unit in this group
 					for _, group in pairs(group_table.group) do
 						group.country = group_country.name
 						group.coalition = group_coalition.name
-						group.type = group_type
+						group.group_type = group_type
 
 						-- Adding this unit to the units list
 						table.insert(groups, group)
@@ -114,7 +116,7 @@ mission_io.get_units = function(mission, coalition, country, unit_type, group_na
 	if mission.mission ~= nil then
 		if type(mission.coalition) == 'string' then coalition = {mission.coalition} else coalition = mission.coalition end
 		if type(mission.country) == 'string' then country = {mission.country} else country = mission.country end
-		if type(mission.type) == 'string' then unit_type = {mission.type} else unit_type = mission.type end
+		if type(mission.unit_type) == 'string' then unit_type = {mission.unit_type} else unit_type = mission.unit_type end
 		if type(mission.groupName) == 'string' then group_name = {mission.groupName} else group_name = mission.groupName end
 		mission = mission.mission
 	end
@@ -127,7 +129,10 @@ mission_io.get_units = function(mission, coalition, country, unit_type, group_na
 	if not group_name then
 		for _, group in pairs(groups) do
 			for _, unit in pairs(group.units) do
-				table.insert(units. unit)
+				unit.coalition = group.coalition
+				unit.country = group.country
+				unit.unit_type = group.group_type
+				table.insert(units, unit)
 			end
 		end
 		return units
@@ -137,18 +142,21 @@ mission_io.get_units = function(mission, coalition, country, unit_type, group_na
 	for _, group in pairs(groups) do
 		-- Filtering out any groups we want
 		if not (
-				x.contains(group.name, group_name, false)
+				table.contains(group.name, group_name, false)
 				  or
-				x.contains(group.groupId, group_name, false)
+				table.contains(group.groupId, group_name, false)
 			) then
 			goto continue
 		end -- If we didn't filter, we want this group
 
 		for _, unit in pairs(group.units) do
+			unit.coalition = group.coalition
+			unit.country = group.country
+			unit.unit_type = group.group_type
 			table.insert(units, unit)
 		end
 
 		::continue::
 	end
-	return units
+	return
 end
