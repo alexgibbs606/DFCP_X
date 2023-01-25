@@ -23,7 +23,7 @@ mission_io.write_mission = function(filepath, mission_data)
 end
 
 -- helper function to write out the mission.lua contents in "readable" form
-mission_io.serialize_inner =function(file, o, indent)
+mission_io.serialize_inner = function(file, o, indent)
     if type(o) == "number" then
         file:write(o)
     elseif type(o) == "string" then
