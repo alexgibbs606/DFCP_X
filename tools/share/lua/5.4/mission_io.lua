@@ -76,7 +76,7 @@ mission_io.get_groups = function(mission, coalition, country, unit_type)
 	for _, group_coalition in pairs(mission.coalition) do
 
 		-- Filtering out coalitions we didn't ask for
-		if not table.contains(group_coalition.name, coalition or {'red', 'blue', 'neutrals'}, false) then
+		if coalition == nil or not table.contains(group_coalition.name, coalition, false) then
 			goto continue_coalition
 		end -- If we didn't filter, we want this group of units
 
@@ -84,7 +84,7 @@ mission_io.get_groups = function(mission, coalition, country, unit_type)
 		for _, group_country in pairs(group_coalition.country) do
 
 			-- Filtering out countries we didn't ask for
-			if not table.contains(group_country.name, country or {'usa', 'russia'}, false) then
+			if country == nil or not table.contains(group_country.name, country, false) then
 				goto continue_country
 			end -- If we didn't filter, we want this country
 
@@ -92,7 +92,7 @@ mission_io.get_groups = function(mission, coalition, country, unit_type)
 			for group_type, group_table in pairs(group_country) do
 
 				-- Since types are stored differe, we can look for the types requested instead of filtering them out
-				if table.contains(group_type, unit_type or {'ship', 'plane', 'static'}, false) then
+				if unit_type == nil or table.contains(group_type, unit_type, false) then
 
 					-- Iterating through each unit in this group
 					for _, group in pairs(group_table.group) do
