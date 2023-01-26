@@ -1,5 +1,10 @@
 require 'tableExtension'
 
+-- Getting this files location
+print(debug.getinfo(1).source:match("@?(.*/)"))
+
+
+
 mission_io = {}
 
 mission_io.read_mission = function(mission_file_path)
@@ -9,7 +14,7 @@ mission_io.read_mission = function(mission_file_path)
 	if handle == nil then error('Mission file `' .. mission_file_path .. '` not found.') end
     local raw_data_str  = handle:read("*a")
     handle:close()
-    local raw_data_lua = raw_data_str .. "\n return mission" 
+    local raw_data_lua = raw_data_str .. "\n return mission"
     local mission_data = load(raw_data_lua)()
     return mission_data
 end
