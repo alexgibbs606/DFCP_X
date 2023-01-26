@@ -1,7 +1,7 @@
 local inspect = require 'inspect'
 
 
-table.contains = function(searchField, refTable, caseSensitive)
+table.contains = function(refTable, searchField, caseSensitive)
 	-- By default we're case sensitive
 	caseSensitive = caseSensitive or true
 
