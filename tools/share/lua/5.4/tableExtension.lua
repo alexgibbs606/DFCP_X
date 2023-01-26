@@ -2,6 +2,9 @@ local inspect = require 'inspect'
 
 
 table.contains = function(refTable, searchField, caseSensitive)
+	-- If our reftable is empty, we return false
+	if refTable == nil then return false end
+
 	-- By default we're case sensitive
 	caseSensitive = caseSensitive or true
 
