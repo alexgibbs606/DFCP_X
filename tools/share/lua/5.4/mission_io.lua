@@ -61,7 +61,16 @@ end
 
 
 mission_io.get_groups = function(mission, coalition, country, unit_type)
-	-- Checking optional parameters
+	--[[ Collects all the groups from a mission file and returns it as a single table.
+
+	Arugments:
+		mission: The mission file to search for groups. Open a mission file with misison_io.read_mission.
+		coalition: The coalition to search for. This is a whitelist. If empty, this will not filter out any groups.
+		country: The country to search for. This is a whitelist. If empty, this will not filter out any groups.
+		unit_type: The unit type to search for. This is a whitelist. If empty, this will not filter out any groups.
+	--]]
+
+	-- Checking keyword parameters
 	if mission.mission ~= nil then
 		if type(mission.coalition) == 'string' then coalition = {mission.coalition} else coalition = mission.coalition end
 		if type(mission.country) == 'string' then country = {mission.country} else country = mission.country end
@@ -117,6 +126,15 @@ end
 
 
 mission_io.get_units = function(mission, coalition, country, unit_type, group_name)
+	--[[ Collects all the units from a mission file and returns it as a single table.
+
+	Arugments:
+		mission: The mission file to search for groups. Open a mission file with misison_io.read_mission.
+		coalition: The coalition to search for. This is a whitelist. If empty, this will not filter out any groups.
+		country: The country to search for. This is a whitelist. If empty, this will not filter out any groups.
+		unit_type: The unit type to search for. This is a whitelist. If empty, this will not filter out any groups.
+		group_name: The unit's group name or group id to search for. This is a whitelist. If empty, this will not filter out any groups.
+	--]]
 	-- Checking optional parameters
 	if mission.mission ~= nil then
 		if type(mission.coalition) == 'string' then coalition = {mission.coalition} else coalition = mission.coalition end
@@ -127,7 +145,6 @@ mission_io.get_units = function(mission, coalition, country, unit_type, group_na
 	end
 
 	local units = {}
-
 	local groups = mission_io.get_groups(mission, coalition, country, unit_type)
 
 	-- If we're not given a group list, then we'll return everything
@@ -141,7 +158,7 @@ mission_io.get_units = function(mission, coalition, country, unit_type, group_na
 			end
 		end
 		return units
-	end
+	end -- Method stops here if we didn't have a group name
 
 	-- If we are asking for a specific group
 	for _, group in pairs(groups) do
