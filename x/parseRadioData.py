@@ -30,8 +30,8 @@ with open(r'DFCP-ME\x\radio.data.csv') as inFile:
 
 
 
-with open(r'DFCP-ME\tools\share\lua\5.4\dat\radio.data.lua', 'w') as outFile:
-	outFile.write('radio = {')
+with open(r'DFCP-ME\tools\share\lua\5.4\dat\radio_data.lua', 'w') as outFile:
+	outFile.write('radio_data = {')
 	for airframeName, radioData in data.items():
 		for radio in radioData:
 			for field, value in radio.items():

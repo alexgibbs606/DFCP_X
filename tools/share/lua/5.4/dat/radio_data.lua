@@ -126,7 +126,7 @@ radio_data = {
 		["GUARDFrequency"] = 121.5,
 	}, {
 		["radioName"] = "CA FM",
-		["minFrequency"] = "20 FM",
+		["minFrequency"] = "20 FM",
 		["maxFrequency"] = "87.975FM",
 		["GUARDFrequency"] = "NO",
 	}
@@ -625,3 +625,4 @@ radio_data = {
 		["GUARDFrequency"] = nil,
 	}
 },
+}
