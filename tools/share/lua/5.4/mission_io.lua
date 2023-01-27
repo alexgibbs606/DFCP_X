@@ -60,125 +60,75 @@ mission_io.serialize_inner = function(file, o, indent)
 end
 
 
-mission_io.get_groups = function(mission, coalition, country, unit_type)
-	--[[ Collects all the groups from a mission file and returns it as a single table.
+mission_io.get_all_groups = function(mission_data)
+    --[[ Returns a table with all unit groups in the mission. This is not filtered in any way.
 
-	Arugments:
-		mission: The mission file to search for groups. Open a mission file with misison_io.read_mission.
-		coalition: The coalition to search for. This is a whitelist. If empty, this will not filter out any groups.
-		country: The country to search for. This is a whitelist. If empty, this will not filter out any groups.
-		unit_type: The unit type to search for. This is a whitelist. If empty, this will not filter out any groups.
-	--]]
+    Will also collecct the following information from parent structures:
+        - coalition
+        - country
+        - group type
 
-	-- Checking keyword parameters
-	if mission.mission ~= nil then
-		if type(mission.coalition) == 'string' then coalition = {mission.coalition} else coalition = mission.coalition end
-		if type(mission.country) == 'string' then country = {mission.country} else country = mission.country end
-		if type(mission.unit_type) == 'string' then unit_type = {mission.unit_type} else unit_type = mission.unit_type end
-		mission = mission.mission
-	end
+    Arguments:
+        mission_data: The mission data retrieved from a mission file.
+            Use mission_io.read_mission to open a mission file.
+    --]]
+    local groups = {}
 
-	local groups = {}
+    -- Iterating through our coalitions
+    for _, group_coalition in pairs(mission_data.coalition) do
 
-	-- Filtering our coalition
-	-- Iterating through our coalitions
-	for _, group_coalition in pairs(mission.coalition) do
+        -- Iterating through each country
+        for _, group_country in pairs(group_coalition.country) do
 
-		-- Filtering out coalitions we didn't ask for
-		if coalition ~= nil and not table.contains(coalition, group_coalition.name, false) then
-			goto continue_coalition
-		end -- If we didn't filter, we want this group of units
+            -- Iterating through all our units
+            for group_type, data in pairs(group_country) do
 
-		-- Iterating through each country
-		for _, group_country in pairs(group_coalition.country) do
+                if type(data) ~= 'table' then goto continue end
 
-			-- Filtering out countries we didn't ask for
-			if country ~= nil and not table.contains(country, group_country.name, false) then
-				goto continue_country
-			end -- If we didn't filter, we want this country
+                -- Iterating through each unit in this group
+                for _, group in pairs(data.group) do
+                    -- Adding some information
+                    group.country = group_country.name
+                    group.coalition = group_coalition.name
+                    group.group_type = group_type
 
-			-- Iterating through all our units
-			for group_type, group_table in pairs(group_country) do
+                    -- Adding this unit to the units list
+                    table.insert(groups, group)
 
-				-- Since types are stored differe, we can look for the types requested instead of filtering them out
-				if unit_type == nil or table.contains(unit_type, group_type, false) then
+                end
 
-					-- Iterating through each unit in this group
-					for _, group in pairs(group_table.group) do
-						group.country = group_country.name
-						group.coalition = group_coalition.name
-						group.group_type = group_type
-
-						-- Adding this unit to the units list
-						table.insert(groups, group)
-					end
-
-				end
-
-			end
-			::continue_country::
-		end
-		::continue_coalition::
-	end
-
-	return groups
+                ::continue::
+            end
+        end
+    end
+    return groups
 end
 
 
-mission_io.get_units = function(mission, coalition, country, unit_type, group_name)
-	--[[ Collects all the units from a mission file and returns it as a single table.
+mission_io.get_units_from_groups = function(group_data)
+    --[[ Unpacks all the groups and returns a table of all the units in the mission.
 
-	Arugments:
-		mission: The mission file to search for groups. Open a mission file with misison_io.read_mission.
-		coalition: The coalition to search for. This is a whitelist. If empty, this will not filter out any groups.
-		country: The country to search for. This is a whitelist. If empty, this will not filter out any groups.
-		unit_type: The unit type to search for. This is a whitelist. If empty, this will not filter out any groups.
-		group_name: The unit's group name or group id to search for. This is a whitelist. If empty, this will not filter out any groups.
-	--]]
-	-- Checking optional parameters
-	if mission.mission ~= nil then
-		if type(mission.coalition) == 'string' then coalition = {mission.coalition} else coalition = mission.coalition end
-		if type(mission.country) == 'string' then country = {mission.country} else country = mission.country end
-		if type(mission.unit_type) == 'string' then unit_type = {mission.unit_type} else unit_type = mission.unit_type end
-		if type(mission.groupName) == 'string' then group_name = {mission.groupName} else group_name = mission.groupName end
-		mission = mission.mission
-	end
+    Will also collecct the following information from parent structures:
+        - coalition
+        - country
+        - groupId
+        - group type
+        - group name
 
-	local units = {}
-	local groups = mission_io.get_groups(mission, coalition, country, unit_type)
-
-	-- If we're not given a group list, then we'll return everything
-	if not group_name then
-		for _, group in pairs(groups) do
-			for _, unit in pairs(group.units) do
-				unit.coalition = group.coalition
-				unit.country = group.country
-				unit.unit_type = group.group_type
-				table.insert(units, unit)
-			end
-		end
-		return units
-	end -- Method stops here if we didn't have a group name
-
-	-- If we are asking for a specific group
-	for _, group in pairs(groups) do
-		-- Filtering out any groups we want
-		if not (
-				table.contains(group_name, group.name, false)
-				  or
-				table.contains(group_name, group.groupId, false)
-			) then
-			goto continue
-		end -- If we didn't filter, we want this group
-
-		for _, unit in pairs(group.units) do
-			unit.coalition = group.coalition
-			unit.country = group.country
-			unit.unit_type = group.group_type
-			table.insert(units, unit)
-		end
-
-		::continue::
-	end
-	return
+    Arguments:
+        group_data: The mission's group data retrieved from a mission file.
+            Use mission_io.get_all_groups to open a mission file.
+        --]]
+    local units = {}
+    for _, group in pairs(group_data) do
+        for _, unit in pairs(group.units) do
+            unit.coalition = group.coalition
+            unit.country = group.country
+            unit.groupId = group.groupId
+            unit.group_type = group.group_type
+            unit.group_name = group.name
+            table.insert(units, unit)
+        end
+    end
+    return units
 end
