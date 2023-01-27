@@ -1,0 +1,34 @@
+Aircraft,Name,Min,Max,Guard Channel,Name,Min,Max,Guard Channel,Name,Min,Max,Guard Channel,Radio Switching,Volume Control,In-Cockpit DCS PTT,Notes
+A10A,AN/ARC-186(V),116,151.975,121.5,AN/ARC-164 UHF,225.00,399.98,243.00,AN/ARC-186(V)FM,30 FM,87.975 FM,,External HotKey,External Overlay,No,
+MiG-29 A/S/G,R-862,100.00,399.98,121.50,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,External HotKey,External Overlay,No,
+SU-25(T),R-862,100.00,399.98,121.50,R-828,20 FM,59.975 FM,NO,No Radio,No Radio,No Radio,No Radio,External HotKey,External Overlay,No,
+SU-27,R-800,100.00,399.98,121.50,R-864,3,10,NO,No Radio,No Radio,No Radio,No Radio,External HotKey,External Overlay,No,
+F15C,AN/ARC-164 UHF 1,225.00,399.98,243.00,AN/ARC-164 UHF 2,225,399.975,NO,No Radio,No Radio,No Radio,No Radio,External HotKey,External Overlay,No,
+Other Aircraft / Mods / FC3,FC3 UHF,225.00,400.00,243.00,FC3 VHF,100,151.975,NO,FC3 FM,20 FM,87.975FM,NO,External HotKey,External Overlay,No,
+CA / Spectator,CA UHF/VHF,100.00,400.00,243.00,CA UHF/VHF,100.00,400.00,121.5,CA FM,20 FM,87.975FM,NO,External HotKey,External Overlay,No,Special Radio set with increased range for CGI / CA / AWACS. Additionaly  4th radio HF (2-50MHZ) for MiG-15/FW/Bf GCI
+UH-1H,AN/ARC-51BX - UHF,225.00,399.90,243.00,AN/ARC-134,116,151.975,NO,AN/ARC-131,30 FM,75.95 FM,NO,In-Cockpit,In-Cockpit,Yes,Radio 3 is FM
+SA342 M/L,TRAP 138A,118.00,143.98,NO,UHF TRA 6031,225,399.975,243,TRC 9600 PR4G,20 FM,60 FM,NO,External HotKey,In-Cockpit,No,
+KA-50,R-800L14 VHF/UHF,100.00,399.90,121.50,R-828,20 FM,59.975 FM,NO,No Radio,No Radio,No Radio,No Radio,In-Cockpit,In-Cockpit,No,R-800 - AM/FM Switch
+Mi-8,R-863,100.00,399.90,121.5 or 243,JADRO-1A,2,20,NO,R-828,20 FM,59.975 FM,NO,In-Cockpit,In-Cockpit,Yes,R-863 - AM/FM Switch Additional data in the Mi-8 manual
+L-39,R-832M,118.00,399.95,121.50,INTERCOM,INTERCOM,INTERCOM,NO,No Radio,No Radio,No Radio,No Radio,No Radio,In-Cockpit,Yes + Intercom PTT,Intercom Switch on top left of throttle or in the stick (back seat) - Push and Hold
+A10C,AN/ARC-186(V),116,151.975,121.5,AN/ARC-164 UHF,225.00,399.90,243.00,AN/ARC-186(V)FM,30 FM,87.975 FM,40.5,External HotKey,In-Cockpit,No,Radio 3 is FM
+F-86,AN/ARC-27,225.00,399.90,243.00,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,N/A,In-Cockpit,Yes,
+MiG-15,RSI-6K,3.75,5.00,NO,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,N/A,In-Cockpit,Yes,"Range: 0-1000 metres: 80-90km, +1000: 120km aprox."
+MiG-21,R-832,100.00,399.90,NO,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,N/A,In-Cockpit,Yes,
+TF/P-51D,SCR522A,100.00,156.00,NO,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,N/A,In-Cockpit,Yes,http://www.rkk-museum.ru/documents/archives/images/54a-44-02.pdf
+FW-190,FuG 16ZY,38.40,42.40,NO,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,N/A,N/A,No,1st channel not for radio communication. It seems not implemented yet.
+BF-109,FuG 16ZY,38.40,42.40,NO,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,N/A,In-Cockpit,No,1st channel not for radio communication. It seems not implemented yet.
+C-101,AN/ARC-164 UHF,225.00,399.90,243.00,AN/ARC-134,116,149.975,NO,INTERCOM,INTERCOM,INTERCOM,NO,In-Cockpit,In-Cockpit,No,
+Hawk,AN/ARC-164 UHF,225.00,399.90,243.00,ARI 23259/1,116,149.975,121.5,No Radio,No Radio,No Radio,No Radio,N/A,In-Cockpit,No,
+M2000C,TRT ERA 7000 (V/UHF),118-144,225-399.975,243.00,TRT ERA 7200 UHF,225,399.9,NO,No Radio,No Radio,No Radio,No Radio,External HotKey,In-Cockpit,No,UHF Radio has Encryption - press the green UHF CDE button
+F5E-3 / MiG 28,AN/ARC-164 UHF,225.00,399.90,243.00,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,N/A,In-Cockpit,Yes,
+AJS 37,FR-22 (V/UHF),103-155.995,225-399.95,NO,FR-24 VHF,110,147,121.5,No Radio,No Radio,No Radio,No Radio,External HotKey,In-Cockpit,No,FR-24 have 5 preset channels - 4 Normal + Guard
+F/A-18C,AN/ARC-210,30-88,255-399.975,121.5 or 243,AN/ARC-210,30-88,255-399.975,121.5 or 243,No Radio,No Radio,No Radio,No Radio,External HotKey,In-Cockpit,No,
+F-14B,AN/ARC-159 (UHF1 Pilot),225.00,399.975,243.00,AN/ARC-182 (V/UHF2 RIO),30-88,255-399.975,as desired,No Radio,No Radio,No Radio,No Radio,N/A,In-Cockpit,No,
+A-10C II,AN/ARC-186(V),116,151.975,121.50,AN/ARC-164 UHF,225.00,399.90,243.00,AN/ARC-186(V),116,151.975,121.50,UNK,In-Cockpit,No,
+JF-17,R&S M3AR,108-173.975,225-399.975,121.5 or 243,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,UNK,In-Cockpit,No,
+P-47,SCR522,100.00,150.000,,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,UNK,In-Cockpit,No,
+F-16,AN/ARC-164 UHF,225.00,399.90,243.00,AN/ARC-222,108.00,173.975,121.5,No Radio,No Radio,No Radio,No Radio,UNK,In-Cockpit,No,
+I-16,SCR522,100.00,156.000,,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,UNK,In-Cockpit,No,
+MiG-19,RSIU-4V,100.00,150.000,,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,UNK,In-Cockpit,No,
+CE-2,KY 196B,118.00,136.992,121.50,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,No Radio,UNK,In-Cockpit,No,
