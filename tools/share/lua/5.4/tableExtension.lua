@@ -1,3 +1,6 @@
+-- Depricated for ./colxtion.lua
+
+
 local inspect = require 'inspect'
 
 table.contains = function(refTable, searchField, caseSensitive)

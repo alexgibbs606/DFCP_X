@@ -1,3 +1,6 @@
+-- Depricated for ./mission.lua
+
+
 require 'tableExtension'
 
 -- Getting this files location
