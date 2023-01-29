@@ -280,13 +280,13 @@ function Inspector:putValue(v)
             end
          end
 
-         local mt = getmetatable(t)
-         if type(mt) == 'table' then
-            if seqLen + keysLen > 0 then puts(buf, ',') end
-            tabify(self)
-            puts(buf, '<metatable> = ')
-            self:putValue(mt)
-         end
+         -- local mt = getmetatable(t)
+         -- if type(mt) == 'table' then
+         --    if seqLen + keysLen > 0 then puts(buf, ',') end
+         --    tabify(self)
+         --    puts(buf, '<metatable> = ')
+         --    self:putValue(mt)
+         -- end
 
          self.level = self.level - 1
 
