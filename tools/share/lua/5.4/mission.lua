@@ -49,8 +49,8 @@ function Mission:new(mission_path)
 
     -- Loading data from our file into memory
     self.data = self._open_mission(self.mission_file)
-    self.groups = Colxtion:new(self:_get_groups())
-    self.units = Colxtion:new(self:get_units_from_groups())
+    self.groups = self:_get_groups()
+    self.units = self:get_units_from_groups()
 
     -- Returning instance of our current mission file
     return newMission
@@ -156,6 +156,8 @@ function Mission:_get_groups(mission_data)
     Arguments:
         mission_data: The mission data retrieved from a mission file.
             Use mission_io.read_mission to open a mission file.
+
+    Returns a Colxtion of groups from the mission data.
     ]]
     -- Default mission data
     mission_data = mission_data or self.data
@@ -189,7 +191,7 @@ function Mission:_get_groups(mission_data)
             end
         end
     end
-    return groups
+    return Colxtion:new(groups)
 end
 
 
@@ -209,7 +211,9 @@ function Mission:get_units_from_groups(group_data)
     Arguments:
         group_data: The mission's group data retrieved from a mission file.
             Use mission_io.get_all_groups to open a mission file.
-        ]]
+
+    Returns a Colxtion of unit tables from the given group data.
+    ]]
     -- Default group data
     group_data = group_data or self.groups
 
@@ -225,7 +229,7 @@ function Mission:get_units_from_groups(group_data)
             table.insert(units, unit)
         end
     end
-    return units
+    return Colxtion:new(units)
 end
 
 
