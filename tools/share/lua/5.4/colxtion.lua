@@ -53,6 +53,69 @@ function Colxtion:insert(item)
 	table.insert(self, item)
 end
 
+
+function Colxtion:set(values)
+	--[[ Sets the given fields in the collection.
+
+	Arguments:
+		values: A table of key/values to set in our table.
+
+	Usage:
+		Can set all fields to a specific value:
+			foo = Colxtion:new({...})
+			foo:set({
+				bar = 'foobar'
+			})
+
+		This can also be used with :where to make SQL-like set statements:
+			foo = Colxtion:new({...})
+			foo:where({
+				skill = 'player'
+			}):set({
+				skill = 'Client'
+			})
+	]]
+    for _, sub_table in ipairs(self) do
+		for key, value in values do
+			sub_table[key] = value
+		end
+    end
+end
+
+
+function Colxtion:update(updates)
+	--[[ Updates the given fields in the collection.
+
+	Opposed to Colxtion:set, this will only change the field if it exists in the Colxtion already.
+
+	Arguments:
+		update: A table of key/values to update in our table.
+
+	Usage:
+		Can update all fields to a specific value:
+			foo = Colxtion:new({...})
+			foo:update({
+				bar = 'foobar'
+			})
+
+		This can also be used with :where to make SQL-like update statements:
+			foo = Colxtion:new({...})
+			foo:where({
+				skill = 'player'
+			}):update({
+				skill = 'Client'
+			})
+	]]
+    for _, sub_table in ipairs(self) do
+		for key, value in updates do
+			if sub_table[key] ~= nil then
+				sub_table[key] = value
+			end
+		end
+    end
+end
+
+
 function Colxtion:dump(depth)
 	-- Default depth is 2
 	if #self == 0 then depth = depth or 1 else depth = depth or 2 end
