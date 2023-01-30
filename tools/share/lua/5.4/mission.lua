@@ -290,6 +290,61 @@ function Mission:get_client_planes()
 end
 
 
+function Mission:match_player_fields(coalition, source_group, field_name)
+    --[[ This copies a field from the source group name or id to all other player/client groups.
+
+    This is useful for copying frequency, task, tasks, units, or route(waypoints)
+
+    Arguments:
+        coalition: The coalition to handle our fields. Either 'red' or 'blue'.
+        source_group: The group name or id of your source group. If you're using an id, make sure your passing an int and not a string.
+            Checks group names before id's. If your search matches on a name, it won't continue looking for id.
+            If your search matches on many id's, it will check for id before giving up.
+        field_name: The field to copy from our source group to all other player/client planes.
+    ]]
+    -- First, we have to find groups with player planes in them, since skill is located in the unit table instead of the group table
+    local player_planes = self.units:where({
+        coalition = coalition,
+        group_type = 'plane',
+        skill = {'client', 'player'},
+    })
+
+    -- We iterate through this table and find a list of all our group names
+    local player_group_names = Colxtion:new()
+    for _, plane in ipairs(player_planes) do
+        -- Checking if we have that groupname
+        if not player_group_names:contains(plane.group_name) then
+            player_group_names:insert(plane.group_name)
+        end
+    end
+
+    -- Now we find all our groups with player planes and copy those values over
+    self.groups:dup_field({
+        coalition = coalition,
+        group_type = 'plane',
+        name = source_group,
+    }, {
+        coalition = coalition,
+        group_type = 'plane',
+        name = player_group_names,
+    }, field_name)
+
+end
+
+
 --[[
     FULL-SERVICE METHODS
 ]]
+function Mission:match_player_waypoints(coalition, source_group)
+    --[[ This copies a field from the source group name or id to all other player/client groups.
+
+    This is useful for copying frequency, task, tasks, units, or route(waypoints)
+
+    Arguments:
+        coalition: The coalition to handle our fields. Either 'red' or 'blue'.
+        source_group: The group name or id of your source group. If you're using an id, make sure your passing an int and not a string.
+            Checks group names before id's. If your search matches on a name, it won't continue looking for id.
+            If your search matches on many id's, it will check for id before giving up.
+    ]]
+    self:match_player_fields(coalition, source_group, 'route')
+end
