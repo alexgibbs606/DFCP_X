@@ -40,6 +40,11 @@ function Colxtion:contains(search_field, case_sensitive)
 	return self[search_field] ~= nil
 end
 
+
+function Colxtion:insert(item)
+	table.insert(self, item)
+end
+
 function Colxtion:dump(depth)
 	-- Default depth is 2
 	if #self == 0 then depth = depth or 1 else depth = depth or 2 end
