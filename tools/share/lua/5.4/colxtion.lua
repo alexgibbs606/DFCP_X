@@ -42,7 +42,7 @@ end
 
 function Colxtion:dump(depth)
 	-- Default depth is 2
-	if #self < 1 then depth = depth or 1 else depth = depth or 2 end
+	if #self == 0 then depth = depth or 1 else depth = depth or 2 end
 	return inspect(self, {depth = depth})
 end
 
