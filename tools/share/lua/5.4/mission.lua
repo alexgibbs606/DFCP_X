@@ -19,8 +19,18 @@ function Mission:new(mission_path)
 
     Arguments:
         mission_path: The filepath to the .miz file that contains the mission.
-    ]]
 
+    Usage:
+        A program to make sure all player/client planes are set to 'Client' to prevent issues on multiplayer, and to set all the client planes to use the same waypoints as the 'PINEAPPLE-1' group.
+        ``` lua
+        require 'mission'
+        local mission = Mission:new([[C:\Users\AleX\Saved Games\DCS.openbeta\Missions\operationConjecture\OperationConjecture.miz]=])
+        mission:save([[C:\Users\AleX\Saved Games\DCS.openbeta\Missions\operationConjecture\OperationConjecturea.miz]=]
+        mission.match_player_skill()
+        mission:match_player_waypoints('blue', 'PINEAPPLE-1')
+        mission:save([[C:\Users\AleX\Saved Games\DCS.openbeta\Missions\operationConjecture\OperationConjectureb.miz]=])
+        ```
+    ]]
     -- Creating new table and setting metatable to this definition
     local newMission = {}
     setmetatable(newMission, self)
@@ -38,7 +48,7 @@ function Mission:new(mission_path)
     )
 
     -- Loading data from our file into memory
-    self.data = self:_open_mission()
+    self.data = self._open_mission(self.mission_file)
     self.groups = Colxtion:new(self:_get_groups())
     self.units = Colxtion:new(self:get_units_from_groups())
 
@@ -46,6 +56,27 @@ function Mission:new(mission_path)
     return newMission
 end
 
+
+function Mission:save(destination_miz)
+    --[[ Saves the mission object to a given miz file.
+
+    More specifically, everything until this point has been in memory, so this writes to persistant storage, zips to a temporary zip file, then updates to a .miz.
+
+    Arguments:
+        destination_miz: The final destination of your mission file. Defaults to the original miz file with a timestamp on it (will not override original mission file by default).
+    ]]
+    -- Finding a miz file to write
+    destination_miz = destination_miz or self.working_dir .. '.miz'
+
+    -- Writing our mission file
+    Mission._write_mission(self.mission_file, self.data)
+
+    -- Unpacking our mission file for use
+    os.execute('powershell -file "' .. PACK_MIZ ..
+        '" -mission_file_dir "' .. self.working_dir ..
+        '\\*" -destination_miz "' .. destination_miz .. '"'
+    )
+end
 
 --[[
     PRIVATE CLASS UTILITY
