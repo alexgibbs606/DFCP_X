@@ -85,7 +85,7 @@ function Colxtion:where(search_fields, case_sensitive)
 		table.insert(out_data, data)
 		::failed::
 	end
-	return out_data
+	return Colxtion:new(out_data)
 end
 
 	-- dup_field = function(self, source_, destination_search_fields, fields_to_copy)
