@@ -27,15 +27,23 @@ function Colxtion:contains(search_field, case_sensitive)
 		-- Lower once here to improve performance
 		search_field = string.lower(search_field)
 
-		for _, value in pairs(self) do
+		for _, value in ipairs(self) do
 			-- We process our return here to increase performance
-			if search_field == string.lower(value) then
+			if type(value) == 'string' and search_field == string.lower(value) then
 				return true
 			end
 		end
 		return false
-	end
 
+	elseif type(search_field) == 'boolean' then
+		for _, value in ipairs(self) do
+			if value == search_field then
+				return true
+			end
+		end
+		return false
+
+	end
 	-- If we've gotten here, we're not wanting case sensitive check
 	return self[search_field] ~= nil
 end
