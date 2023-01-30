@@ -335,6 +335,18 @@ end
 --[[
     FULL-SERVICE METHODS
 ]]
+function Mission.match_player_skill()
+    --[[ Finds all planes that are 'Player' skill and makes them 'Client'
+    ]]
+    mission.units:where({
+        coalition = 'blue',
+        skill = 'player'
+    }):update({
+        skill = 'Client'
+    })
+end
+
+
 function Mission:match_player_waypoints(coalition, source_group)
     --[[ This copies a field from the source group name or id to all other player/client groups.
 
