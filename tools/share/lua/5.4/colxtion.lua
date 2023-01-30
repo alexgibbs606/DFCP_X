@@ -164,7 +164,43 @@ function Colxtion:where(search_fields, case_sensitive)
 	return Colxtion:new(out_data)
 end
 
-	-- dup_field = function(self, source_, destination_search_fields, fields_to_copy)
-	-- 	--[[ Duplicates the values of
-	-- 	--]]
-	-- end,
+function Colxtion:dup_field(source_search_fields, destination_search_fields, fields_to_copy)
+	--[[ Duplicates the values of requested fields from the field of the source results to the fields of the destination results.
+
+	Arguments:
+		source_search_fields: a Colxtion where field to find a single table in our Colxtion.
+		desination_search_fields: A Colxtion where field to find the destination tables.
+		fields_to_copy: A list of fields to copy from the source table to the destination tables.
+
+	Returns true if the alteration was sucessful or false if it wasn't.
+	]]
+	-- Making sure our fields_to_copy is a table, if not we make it a table
+	if type(fields_to_copy) ~= 'table' then fields_to_copy = {fields_to_copy} end
+
+	-- Finding our source sub-table
+	local source_table = self:where(source_search_fields)
+
+	-- Checking if we only have one result and that the result is a table
+	if #source_table > 1 and type(source_table[1]) == 'table' then return false end
+	source_table = Colxtion:new(source_table[1])
+	-- Also checking that our source_table has all the keys that we're expecting
+	for _, field in ipairs(fields_to_copy) do
+		if not source_table:contains(field) then return false end
+	end
+
+	-- Finding our desination tables
+	local dest_tables = self:where(destination_search_fields)
+
+	-- Making sure that we have atleast one destination field and it's a table
+	if #dest_tables < 1 and type(dest_tables[1]) == 'table' then return false end
+
+	-- Iterating our desination tables and setting our fields
+	for _, sub_table in ipairs(dest_tables) do
+		for field in fields_to_copy do
+			sub_table[field] = source_table[field]
+		end
+	end
+
+	-- If we've gotten here, looks like we've successfully copied our fields over
+	return true
+end
