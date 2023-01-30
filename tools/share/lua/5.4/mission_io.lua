@@ -74,7 +74,7 @@ mission_io.get_all_groups = function(mission_data)
     Arguments:
         mission_data: The mission data retrieved from a mission file.
             Use mission_io.read_mission to open a mission file.
-    --]]
+    ]]
     local groups = {}
 
     -- Iterating through our coalitions
@@ -121,7 +121,7 @@ mission_io.get_units_from_groups = function(group_data)
     Arguments:
         group_data: The mission's group data retrieved from a mission file.
             Use mission_io.get_all_groups to open a mission file.
-        --]]
+    ]]
     local units = {}
     for _, group in pairs(group_data) do
         for _, unit in pairs(group.units) do

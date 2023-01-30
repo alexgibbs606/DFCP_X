@@ -42,7 +42,7 @@ with open(r'DFCP-ME\x\radio.data.csv') as inFile:
 
 with open(r'DFCP-ME\tools\share\lua\5.4\dat\radio_data.lua', 'w') as outFile:
 	# Writing our documentation
-	outFile.write(f'--[[{FILE_DOCUMENTATION}--]]\n\n')
+	outFile.write(f'--[[{FILE_DOCUMENTATION}]]\n\n')
 
 	# Starting out radio data table
 	outFile.write('radio_data = {')

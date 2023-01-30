@@ -19,7 +19,7 @@ function Mission:new(mission_path)
 
     Arguments:
         mission_path: The filepath to the .miz file that contains the mission.
-    --]]
+    ]]
 
     -- Creating new table and setting metatable to this definition
     local newMission = {}
@@ -49,7 +49,7 @@ end
 
 --[[
     PRIVATE CLASS UTILITY
---]]
+]]
 function Mission._open_mission(mission_file_path)
     -- Reading the mission file
     local file_handle = io.open(mission_file_path, 'rb')
@@ -125,7 +125,7 @@ function Mission:_get_groups(mission_data)
     Arguments:
         mission_data: The mission data retrieved from a mission file.
             Use mission_io.read_mission to open a mission file.
-    --]]
+    ]]
     -- Default mission data
     mission_data = mission_data or self.data
 
@@ -164,7 +164,7 @@ end
 
 --[[
     GROUP AND UNIT ACCESSORS
---]]
+]]
 function Mission:get_units_from_groups(group_data)
     --[[ Unpacks all the groups and returns a table of all the units in the mission.
 
@@ -178,7 +178,7 @@ function Mission:get_units_from_groups(group_data)
     Arguments:
         group_data: The mission's group data retrieved from a mission file.
             Use mission_io.get_all_groups to open a mission file.
-        --]]
+        ]]
     -- Default group data
     group_data = group_data or self.groups
 
@@ -215,7 +215,7 @@ function Mission:units_where(...)
         onboard_num: The number that displays on the wingtip for the aircraft i.e. '161'
         skill: The skill that this unit is set to. i.e. 'Average', 'Good', 'High', 'Excellent', 'Random', 'Client', or 'Player'
 
-    --]]
+    ]]
     -- Handling default arguments
     return self.units:where(...)
 end
@@ -238,7 +238,7 @@ function Mission:groups_where(...)
         type: The type of unit i.e. 'FA-18C_hornet'
         unitId: Unique identifier for this unit i.e. 10
 
-    --]]
+    ]]
     -- Handling default arguments
     return self.groups:where(...)
 end
@@ -246,7 +246,7 @@ end
 
 function Mission:get_client_planes()
     --[[ Returns all groups that are registered as clients
-    --]]
+    ]]
     return self.groups:where({
         coalition = 'blue',
         group_type = 'plane',
@@ -257,4 +257,4 @@ end
 
 --[[
     FULL-SERVICE METHODS
---]]
+]]

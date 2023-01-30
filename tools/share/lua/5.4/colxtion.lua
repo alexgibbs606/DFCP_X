@@ -54,7 +54,7 @@ function Colxtion:where(search_fields, case_sensitive)
 	Arguments:
 		search_fields: A table mapping fields to values. The field is a table key and the values is a table or value to search for.
 		caseSensitive: Determines if our comparison for values is case sensitive. Defaults to false.
-	--]]
+	]]
 	-- Handling default arguments
 	case_sensitive = case_sensitive or false
 

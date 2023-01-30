@@ -7,7 +7,7 @@ If an update is needed, export this file as csv, remove all but the data and it'
 Run the file `DFCP-ME\x\parseRadioData.py` with python > 3.7 to create the `DFCP-ME\tools\share\lua\5.4\dat\radio_data.lua` file including this message.
 
 As of January 2023, the airframe names are NOT accurate to what's in DCS; `DFCP-ME\tools\share\lua\5.4\dat\radio.lua` includes a mapping from DCS airframe names to the names found in the `radio_data.lua` file.
---]]
+]]
 
 radio_data = {
 	["A10A"] = {

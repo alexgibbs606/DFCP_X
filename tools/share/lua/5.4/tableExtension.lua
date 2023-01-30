@@ -47,7 +47,7 @@ table.where = function(table_data, search_fields, caseSensitive)
         table_data: A table that contains tables of data. i.e. a list of tables with accessable data.
         search_fields: A table mapping fields to values. The field is a table key and the values is a table or value to search for.
         caseSensitive: Determines if our comparison for values is case sensitive. Defaults to false.
-    --]]
+    ]]
     -- Handling default arguments
     caseSensitive = caseSensitive or false
 
