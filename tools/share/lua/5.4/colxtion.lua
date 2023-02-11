@@ -125,8 +125,6 @@ end
 function Colxtion:where(search_fields, case_sensitive)
 	--[[ Returns all sub-tables that match the search fields provided.
 
-	This function CAN NOT search for booleans.
-
 	Arguments:
 		search_fields: A table mapping fields to values. The field is a table key and the values is a table or value to search for.
 		caseSensitive: Determines if our comparison for values is case sensitive. Defaults to false.
