@@ -49,8 +49,8 @@ function Colxtion:contains(search_field, case_sensitive)
 end
 
 
-function Colxtion:insert(item)
-	table.insert(self, item)
+function Colxtion:insert(...)
+	table.insert(self, ...)
 end
 
 
