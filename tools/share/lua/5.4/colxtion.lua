@@ -35,7 +35,7 @@ function Colxtion:contains(search_field, case_sensitive)
 		end
 		return false
 
-	elseif type(search_field) == 'boolean' then
+	else
 		for _, value in ipairs(self) do
 			if value == search_field then
 				return true
