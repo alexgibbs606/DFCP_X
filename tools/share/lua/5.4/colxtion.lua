@@ -162,6 +162,40 @@ function Colxtion:where(search_fields, case_sensitive)
 	return Colxtion:new(out_data)
 end
 
+function Colxtion:exclude(search_fields, case_sensitive)
+	--[[ Returns all sub-tables that match the search fields provided.
+
+	Arguments:
+		search_fields: A table mapping fields to values. The field is a table key and the values is a table or value to search for.
+		caseSensitive: Determines if our comparison for values is case sensitive. Defaults to false.
+	]]
+	-- Handling default arguments
+	case_sensitive = case_sensitive or false
+
+	-- If no search fields, we return untouched data
+	if search_fields == nil then return self end
+
+	local out_data = {}
+
+	-- Iterate our data tables, we take it one table at a time
+	for _, data in ipairs(self) do
+		for field, values in pairs(search_fields) do
+			-- 	Confiming that our value is a table, if it's not, we make it a table
+			local field_value = data[field]
+
+			-- Custom match function
+			if field_value ~= nil and self.contains(values, field_value, case_sensitive) then
+				goto failed
+			end
+
+		end -- end field/value in search fields
+		-- if we got here, we haven't failed on any field/value pairs
+		table.insert(out_data, data)
+		::failed::
+	end
+	return Colxtion:new(out_data)
+end
+
 function Colxtion:dup_field(source_search_fields, destination_search_fields, fields_to_copy)
 	--[[ Duplicates the values of requested fields from the field of the source results to the fields of the destination results.
 
