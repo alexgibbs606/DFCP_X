@@ -20,13 +20,15 @@ param (
 	# Parameter help description
 	[Parameter(Mandatory=$true)]
 	[string]
+	$destination_zip,
+	# Parameter help description
+	[Parameter(Mandatory=$true)]
+	[string]
 	$destination_miz
 )
 
-$zip_file_path = "$($destination_miz.basename).zip"
-
 # Packing our data from the source directory
-Compress-Archive $mission_file_dir -DestinationPath $zip_file_path -force
+Compress-Archive -update $mission_file_dir $destination_zip
 
 # Unpacking miz file
-Move-Item "$($zip_file_path)" $destination_miz
+Copy-Item "$($destination_zip)" $destination_miz

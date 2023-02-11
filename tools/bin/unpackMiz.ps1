@@ -20,15 +20,15 @@ param (
 	# Parameter help description
 	[Parameter(Mandatory=$true)]
 	[string]
+	$zip_file_path,
+	# Parameter help description
+	[Parameter(Mandatory=$true)]
+	[string]
 	$destination_path
 )
 
 # Unpacking miz file
-$zip_file_path = "$((Get-Item $miz_file_path).basename).zip"
-Copy-Item "$($miz_file_path)" $zip_file_path
+Copy-Item "$($miz_file_path)" "$($zip_file_path)"
 
 # Pulling data our of our new zip file
-Expand-Archive $zip_file_path -DestinationPath $destination_path -force
-
-# Removing our zip archive that we made by copying the .miz file
-Remove-Item $zip_file_path -force -ErrorAction SilentlyContinue
+Expand-Archive "$($zip_file_path)" -DestinationPath "$($destination_path)" -force
