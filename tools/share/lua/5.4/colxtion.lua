@@ -107,7 +107,7 @@ function Colxtion:update(updates)
 			})
 	]]
     for _, sub_table in ipairs(self) do
-		for key, value in updates do
+		for key, value in pairs(updates) do
 			if sub_table[key] ~= nil then
 				sub_table[key] = value
 			end
