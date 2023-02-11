@@ -8,7 +8,7 @@ TEMP_DIR_NAME = '.dat'
 
 Mission = {}
 
-function Mission:new(mission_path, purge)
+function Mission:new(mission_path)
 	--[[ An interaction class for the mission file.
 
 	This class handles unzipping, altering, saving, and re-ziping of the mission file to let you focus on what you want to change in the mission file.
@@ -50,10 +50,8 @@ function Mission:new(mission_path, purge)
 	self.mission_path = self.working_dir ..'\\'.. 'mission'
 	self.zip_path = self.working_dir ..'\\'.. self.mission_name .. '.zip'
 
-	-- Purging data directory if requested
-	if purge then
-		os.execute('@RD /S /Q "' .. self.data_dir .. '"')
-	end
+	-- Purging working directory. If this isn't empty then we may have issues later.
+	os.execute('@RD /S /Q "' .. self.working_dir .. '"')
 
 	-- Creating our temporary directory
 	os.execute('if not exist "' .. self.data_dir .. '\" mkdir \"' .. self.data_dir .. '\"')
